@@ -4,12 +4,13 @@ ANALYZER='../../proverif -in pitype'
 echo POPCORN
 for i in SECRECY
 do
-
+mkdir Build
+mkdir Temp
 echo $i
-m4 -D$i popcorn.m4 > temp/prot-popcorn-$i.pv
-$PROG $ANALYZER temp/prot-popcorn-$i.pv > temp/prot-popcorn-$i.result
-egrep '(RESULT|goal reachable)' temp/prot-popcorn-$i.result
-grep system temp/prot-popcorn-$i.result | grep user
+m4 -D$i popcorn.m4 > Temp/prot-popcorn-$i.pv
+$PROG $ANALYZER Temp/prot-popcorn-$i.pv > Temp/prot-popcorn-$i.result
+egrep '(RESULT|goal reachable)' Temp/prot-popcorn-$i.result
+grep system Temp/prot-popcorn-$i.result | grep user
 
 done
 ) | tee Build/results.txt

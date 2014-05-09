@@ -1,9 +1,7 @@
-# temporary directory
-temp/
-Build/
-
 # Temporary files
 *~
+Temp/*
+Build/*
 
 # Compiled files
 *.pv

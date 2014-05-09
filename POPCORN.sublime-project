@@ -16,11 +16,11 @@
 			"name": "Build"
 		},
 		{
-			"path": "temp",
+			"path": "Temp",
 			"name": "Temporary files"
 		},
 		{
-			"path": "docs",
+			"path": "Docs",
 			"name": "Documentation",
 			"file_exclude_patterns": ["*.css"]
 		},
