@@ -14,4 +14,4 @@ equation forall k:bitstring, gmsk: gmskey; Pk(GKeygen(gmsk,k)) = GPk(gmsk).
 equation forall k: skey, v: bitstring; CheckSign(Sign(v,k), Pk(k)) = true.
 reduc forall k: skey, v: bitstring; RecoverKey(Sign(v,k)) = Pk(k).
 reduc forall k: skey, v: bitstring; RecoverData(Sign(v,k)) = v.
-reduc forall m:bitstring, k:bitstring, gmsk: gmskey; guncover(Sign(m,GKgen(gmsk,k)),gmsk) = k.
+reduc forall m:bitstring, k:bitstring, gmsk: gmskey; guncover(Sign(m,GKeygen(gmsk,k)),gmsk) = k.

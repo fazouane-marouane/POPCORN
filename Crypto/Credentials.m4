@@ -1,6 +1,6 @@
 (* Anonymous credentials *)
 type ContractID.
-fun createContractID(ID): ContractID [data, dataConverter].
+fun createContractID(ID): ContractID [data, typeConverter].
 
 type credInfo. (* the standard credentials*)
 fun createValidCred(ID,bitstring): credInfo [private]. (* only the system can generate valid standard credentials. The second argument is just a random nonce *)

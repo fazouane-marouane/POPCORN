@@ -1,0 +1,13 @@
+# temporary directory
+temp/
+Build/
+
+# Temporary files
+*~
+
+# Compiled files
+*.pv
+
+# Project configuration
+.gitconfig
+*.sublime-workspace

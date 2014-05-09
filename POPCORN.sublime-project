@@ -1,0 +1,44 @@
+{
+	"folders":
+	[
+		{
+			"path": "Crypto",
+			"name": "Cryptographic Primitives"
+		},
+		{
+			"path": "./",
+			"name": "POPCORN",
+			"folder_exclude_patterns": ["docs","Crypto","Build","temp"],
+			"file_exclude_patterns": [".*", "DishonestActors.m4", "HonestActors.m4", "POPCORN.sublime-project"]
+		},
+		{
+			"path": "Build",
+			"name": "Build"
+		},
+		{
+			"path": "temp",
+			"name": "Temporary files"
+		},
+		{
+			"path": "docs",
+			"name": "Documentation",
+			"file_exclude_patterns": ["*.css"]
+		},
+	],
+	"settings":
+	{
+		"tab_size": 4,
+		"translate_spaces_to_tabs": true
+	},
+	"build_systems":
+	[
+		{
+			"name": "List",
+			"shell_cmd": "ls -l"
+		},
+		{
+			"name": "Build",
+			"shell_cmd": "gen.sh"
+		}
+	]
+}

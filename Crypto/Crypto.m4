@@ -1,5 +1,5 @@
-# symetric asymetric encryption
-include(`Encryption.m4')dnl
-include(`Signature.m4')dnl
-include(`Credentials.m4')dnl
-include(`authentication.m4')dnl
+dnl symetric asymetric encryption
+include(`Crypto/Encryption.m4')dnl
+include(`Crypto/Signature.m4')dnl
+include(`Crypto/Credentials.m4')dnl
+include(`Crypto/Authentication.m4')dnl
