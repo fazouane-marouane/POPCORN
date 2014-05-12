@@ -3,9 +3,9 @@ fun Sign(bitstring, skey): bitstring.
 fun CheckSign(bitstring, pkey): bool.
 
 (* Simplified dynamic group signing *)
-type gskey. (* secret signing key *)
+dnl type gskey. (* secret signing key *)
 type gmskey. (* group manager's secret key *)
-type gpkey. (* group public key *)
+dnl type gpkey. (* group public key *)
 
 fun GKeygen(gmskey,bitstring): skey [private].
 fun GPk(gmskey): pkey.

@@ -7,43 +7,47 @@ type ID. (* Actor's Identifier *)
 fun ID_to_bitstring(ID): bitstring [data, typeConverter].
 
 (* Cryptographic primitives *)
-include(`Crypto/Crypto.m4')
+include(`Crypto/Crypto.pv.m4')
 (* sdr *)
 type transactID.
 fun createReceipt(transactID): bitstring [private].
-fun createSDR(transactID, bitstring, bitstring): bitstring.
+fun createSDR(transactID, bitstring, bitstring): bitstring [data].
+(*
 reduc forall idEP: bitstring, payment: bitstring, trid: transactID; getTransactID(createSDR(trid,idEP,payment))=trid.
 reduc forall idEP: bitstring, payment: bitstring, trid: transactID; getEncryptedEP(createSDR(trid,idEP,payment))=idEP.
 reduc forall idEP: bitstring, payment: bitstring, trid: transactID; getPayment(createSDR(trid,idEP,payment))=payment.
+*)
 
-(* ID: the identifier; channel: contact address; pkey: private key *)
-(* N.b. tables are not visible to the adversary *)
-free CSchannel: channel [private].
-free EPchannel: channel [private].
-free MOchannel: channel [private].
+(* N.b. the yellow pages are not visible to the adversary *)
+free yellowpagesEV: channel [private].
+free yellowpagesCS: channel [private].
+free yellowpagesEP: channel [private].
+free yellowpagesMO: channel [private].
 
 
-include(`_HonestActors/HonestActors.m4')
-include(`_DishonestActors/DishonestActors.m4')
+include(`HonestActors/_HonestActors.pv.m4')
+dnl include(`DishonestActors/_DishonestActors.pv.m4')
 
 (* main process *)
 free publicChannel: channel.
 
 let publishSensitiveInfomation()=
-	out(publicChannel,gpk(gmsk));
+	out(publicChannel,GPk(gmsk));
 	out(publicChannel,kPH).
 
 (* queries *)
 query attacker(idEV).
 
 process
-	new idEV2: ID;
+	new idEV: ID;
+	new idCS: ID;
+	new idEP: ID;
+	new idMO: ID;
 
-	insert gpkeyTable(gpk(gmsk));
-	(
+	( !out(gpk,GPk(gmsk)) |
 		createEV(idEV) | createCS(idCS) | createEP(idEP) | createMO(idMO)| !DR() | !PH() |
-		(*EVattacker() |*) CSattacker() | EPattacker() | (*MOattacker() |*)
-		sendSensitiveInfos() (*| out(c,choice[idEV,idEV2])*)
+		(*EVattacker() | CSattacker() | EPattacker() | (*MOattacker() |*)
+		publishSensitiveInfomation() (*| out(c,choice[idEV,idEV2])*)
 	)
 ifdef(`EVCACHE',`
 ')
