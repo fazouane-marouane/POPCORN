@@ -5,6 +5,6 @@ let dishonestEV(c: channel)=
 	new chUser:channel;
 	new k:bitstring;
 	let anonymcred = createAnonymousCred(idEV,createValidCred(idEV,k)) in
-	get MOTable(idMO,chMO,pkMO) in
-	insert EVTable(idEV,chUser,idMO,createContractID(idEV),skEV,gkgen(gmsk,idEV),anonymcred);
-	out(c,(idEV,chUser,idMO,createContractID(idEV),skEV,gkgen(gmsk,idEV),anonymcred)).
+	in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
+	(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),anonymcred)) |
+	out(c,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),anonymcred)) ).

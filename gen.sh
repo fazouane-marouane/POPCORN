@@ -2,7 +2,7 @@ ANALYZER='../../proverif -in pitype'
 
 (
 echo POPCORN
-for i in SECRECY
+for i in SECRECY ANONYMITY
 do
 mkdir -p Build
 mkdir -p Temp

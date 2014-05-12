@@ -12,11 +12,6 @@ include(`Crypto/Crypto.pv.m4')
 type transactID.
 fun createReceipt(transactID): bitstring [private].
 fun createSDR(transactID, bitstring, bitstring): bitstring [data].
-(*
-reduc forall idEP: bitstring, payment: bitstring, trid: transactID; getTransactID(createSDR(trid,idEP,payment))=trid.
-reduc forall idEP: bitstring, payment: bitstring, trid: transactID; getEncryptedEP(createSDR(trid,idEP,payment))=idEP.
-reduc forall idEP: bitstring, payment: bitstring, trid: transactID; getPayment(createSDR(trid,idEP,payment))=payment.
-*)
 
 (* N.b. the yellow pages are not visible to the adversary *)
 free yellowpagesEV: channel [private].
@@ -26,7 +21,7 @@ free yellowpagesMO: channel [private].
 
 
 include(`HonestActors/_HonestActors.pv.m4')
-dnl include(`DishonestActors/_DishonestActors.pv.m4')
+include(`DishonestActors/_DishonestActors.pv.m4')
 
 (* main process *)
 free publicChannel: channel.
@@ -35,8 +30,9 @@ let publishSensitiveInfomation()=
 	out(publicChannel,GPk(gmsk));
 	out(publicChannel,kPH).
 
+ifdef(`SECRECY',
 (* queries *)
-query attacker(idEV).
+query attacker(new idEV[]).
 
 process
 	new idEV: ID;
@@ -46,8 +42,10 @@ process
 
 	( !out(gpk,GPk(gmsk)) |
 		createEV(idEV) | createCS(idCS) | createEP(idEP) | createMO(idMO)| !DR() | !PH() |
-		(*EVattacker() | CSattacker() | EPattacker() | (*MOattacker() |*)
+		(*EVattacker(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) | (*dishonestMO(publicChannel) |*)
 		publishSensitiveInfomation() (*| out(c,choice[idEV,idEV2])*)
 	)
-ifdef(`EVCACHE',`
-')
+)
+ifdef(`ANONYMITY',
+
+)

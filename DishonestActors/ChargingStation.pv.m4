@@ -2,7 +2,7 @@ let dishonestCS(c: channel) =
 	in(c,idCS:ID);
 	new chCS: channel;
 	new skCS: skey;
-	get EPTable(idEP,chEP,pkEP) in
-	insert CSTable(idCS,chCS,idEP,Pk(skCS));
+	in(yellowpagesEP,(idEP:ID,chEP:channel,pkEP:pkey));
+	(!out(yellowpagesCS,(idCS,chCS,idEP,Pk(skCS)) ) |
 	out(c,(idEP,chEP,pkEP));
-	out(c,(idCS,chCS,idEP,Pk(skCS))).
+	out(c,(idCS,chCS,idEP,Pk(skCS))) ).
