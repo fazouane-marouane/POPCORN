@@ -1,0 +1,40 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+---
+name: Proverif
+scopeName: source.proverif
+fileTypes: ["pv","pv.m4"]
+uuid: 11b3d54b-d9eb-4197-b255-6a6d3d258105
+
+patterns:
+- name: keyword.other.proverif
+  match: (include(?=\(`.*?'\)))|ifdef
+- name: string.quoted.single.proverif
+  begin: \`
+  end: \'
+- name: constant.language.proverif
+  match: ((^|\v|(\h&&[^0-9])|\t|\ )*((in)|(out))(^|\v|\h|\t|\ )*(?=\())|((?<=[^=])=(?=[^=]))|([^\w]((true)|(0)|(false))[^\w])|((?<=(insert)|(get)|(table))(\t|\ )*(\w[\w|0-9]*))
+- name: keyword.operator.proverif
+  match: ((^|\t|\ )*\!)|((?<=^|\v|(\h&&[^0-9])|[^\w])((\|)|(&)|(->)|(<->)|(<=>)|(==>)|(and)|(choice)|(forall)|(typeConverter)|(data)|(event)|(fail)|(free)|(new)|(not)|(phase)|(private))(?=^|\v|(\h&&[^0-9])|[^\w]))
+- name: keyword.control.proverif
+  match: (?<=^|\v|(\h&&[^0-9])|[^\w])((type)|(const)|(table)|(get)|(insert)|(in)|(among)|(can)|(clauses)|(elimtrue)|(else)|(equation)|(fun)|(if)|(let)|(noninterf)|(nounif)|(otherwise)|(param)|(putbegin)|(pred)|(process)|(query)|(reduc)|(suchthat)|(then)|(weaksecret)|(where))(?=^|\v|(\h&&[^0-9])|[^\w])
+- name: variable.parameter.proverif
+  match: (?<=^|\v|(\h&&[^0-9])|[^\w])((memberOptim)|(decompData)|(decompDataSelect)|(block)|(attacker)|(mess)|(ev)|(evinj))(?=^|\v|(\h&&[^0-9])|[^\w])
+- name: support.type.proverif
+  match: ((?<=:|(type))(\t|\ )*\w[\w|0-9]*)
+- name: comment.block.documentation.proverif
+  begin: \(\*
+  end: \*\)
+  captures:
+    '0': {name: comment.line.number-sign.proverif}
+- name: comment.line.double-dash.proverif
+  begin: \#|dnl
+  end: \n
+  captures:
+    '0': {name: comment.line.number-sign.proverif}
+- name: entity.name.function.proverif
+  match: ((\w[\w|0-9]*))(\t|\ )*(?=\([^*])
+- name: variable.parameter.proverif
+  match: (?<=(\(|\,))(\t|\ )*(\w[\w|0-9]*)(\t|\ )*(?=(\)|\,|:))
+- name: variable.language.proverif
+  match: (?<=(let))(\t|\ )*(\w[\w|0-9]*)(\t|\ )*(?=(suchthat)|(in))
+...

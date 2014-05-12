@@ -8,7 +8,7 @@
 		{
 			"path": "./",
 			"name": "POPCORN",
-			"folder_exclude_patterns": ["docs","Crypto","Build","temp"],
+			"folder_exclude_patterns": ["docs","Crypto","Build","temp","syntax highlighting"],
 			"file_exclude_patterns": [".*", "POPCORN.sublime-project"]
 		},
 		{
