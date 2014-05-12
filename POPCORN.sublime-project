@@ -38,7 +38,9 @@
 		},
 		{
 			"name": "Build",
-			"shell_cmd": "gen.sh"
+			"cmd": ["gen.sh"],
+			"working_dir":"$project_path",
+			"shell": true
 		}
 	]
 }
