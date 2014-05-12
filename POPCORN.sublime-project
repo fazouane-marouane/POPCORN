@@ -9,7 +9,7 @@
 			"path": "./",
 			"name": "POPCORN",
 			"folder_exclude_patterns": ["docs","Crypto","Build","temp"],
-			"file_exclude_patterns": [".*", "DishonestActors.m4", "HonestActors.m4", "POPCORN.sublime-project"]
+			"file_exclude_patterns": [".*", "POPCORN.sublime-project"]
 		},
 		{
 			"path": "Build",

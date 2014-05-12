@@ -8,10 +8,6 @@ fun ID_to_bitstring(ID): bitstring [data, typeConverter].
 
 (* Cryptographic primitives *)
 include(`Crypto/Crypto.m4')
-
-
-
-
 (* sdr *)
 type transactID.
 fun createReceipt(transactID): bitstring [private].
@@ -20,7 +16,6 @@ reduc forall idEP: bitstring, payment: bitstring, trid: transactID; getTransactI
 reduc forall idEP: bitstring, payment: bitstring, trid: transactID; getEncryptedEP(createSDR(trid,idEP,payment))=idEP.
 reduc forall idEP: bitstring, payment: bitstring, trid: transactID; getPayment(createSDR(trid,idEP,payment))=payment.
 
-
 (* ID: the identifier; channel: contact address; pkey: private key *)
 (* N.b. tables are not visible to the adversary *)
 free CSchannel: channel [private].
@@ -28,8 +23,8 @@ free EPchannel: channel [private].
 free MOchannel: channel [private].
 
 
-include(`HonestActors/HonestActors.m4')
-include(`DishonestActors/DishonestActors.m4')
+include(`_HonestActors/HonestActors.m4')
+include(`_DishonestActors/DishonestActors.m4')
 
 (* main process *)
 free publicChannel: channel.
@@ -43,6 +38,7 @@ query attacker(idEV).
 
 process
 	new idEV2: ID;
+
 	insert gpkeyTable(gpk(gmsk));
 	(
 		createEV(idEV) | createCS(idCS) | createEP(idEP) | createMO(idMO)| !DR() | !PH() |
@@ -50,5 +46,4 @@ process
 		sendSensitiveInfos() (*| out(c,choice[idEV,idEV2])*)
 	)
 ifdef(`EVCACHE',`
-
 ')
