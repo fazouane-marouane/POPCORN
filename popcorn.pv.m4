@@ -69,16 +69,15 @@ process
 	)
 )
 ifdef(`ANONYMITY',
-dnl Question: is SECRECY <-> ANONYMITY
-free idEV: ID [private].
+dnl Question: is SECRECY <-> ANONYMITY ??
 
 equivalence
 	(
-		createEV(idEV) | !(new idEV:ID; createEV(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
+		(in(publicChannel,idEV:ID); createEV_singleinstance(idEV) ) | !(new idEV:ID; createEV_singleinstance(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
 		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
 	)
 	(
-		!(new idEV:ID; createEV(idEV) )  | createHonestActors() | publishSensitiveInfomation() |
+		(new idEV:ID; in(publicChannel,idEV0:ID); createEV_singleinstance(idEV) ) | !(new idEV:ID; createEV_singleinstance(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
 		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
 	)
 )
