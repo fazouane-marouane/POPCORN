@@ -1,21 +1,22 @@
 (* Energy Provider (EP) *)
 
-table PaidSessions(transactID).
+free PaidSessions: channel [private].
+
 let honestEP(idEP: ID,skEP:skey, chEP:channel, pkEP:pkey)=
 	(* Get the anonymous Commit +SDR *)
 	in(chEP,(sdr:bitstring, commits:bitstring));
 	let createSDR(transactionNumber,enc_idEP, payment) = sdr in
 	(
 		(* wait for the payment *)
-		in(chEP,(payment:bitstring,=transactionNumber));
-		insert PaidSessions(transactionNumber)
+		in(chEP,(=payment,=transactionNumber)); (* TODO: we probably need a secure communication here *)
+		!out(PaidSessions,transactionNumber)
 	) |
 	(
 		(* waits 10 time units before reporting a dispute to DR *)
-		get PaidSessions(=transactionNumber) in 0
-		else(
-			(* report to DR *)
-			out(chDR, (sdr,commits))
+		new callback: channel;
+		(in(PaidSessions,=transactionNumber); out(callback, true) |
+		in(callback,branch:bool); if branch then out(chDR, (sdr,commits)) (* report to DR *) |
+		out(callback,true)
 		)
 	).
 

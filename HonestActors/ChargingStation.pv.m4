@@ -13,7 +13,6 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID, pkCS:pkey, chEP:channel,
 	let m = verifyCred(credEV) in
 	(* the credentials are valid*)
 	(* start the charging session *)
-	in(gpk,gpk_:pkey);
 	new meterReading: bitstring;
 	(* 1.1 Send Meter reading *)
 	out(privateCh,meterReading);

@@ -1,6 +1,10 @@
 (* POPCORN *)
 (* Debug Options *)
-set traceDisplay = long.
+set ignoreTypes = false.
+set simplifyProcess = true.
+set displayDerivation = false .
+set traceDisplay = short.
+set movenew = true.
 
 (* Identifiers *)
 type ID. (* Actor's Identifier *)
@@ -27,25 +31,89 @@ include(`DishonestActors/_DishonestActors.pv.m4')
 free publicChannel: channel.
 
 let publishSensitiveInfomation()=
-	out(publicChannel,GPk(gmsk));
-	out(publicChannel,kPH).
+	(out(publicChannel,GPk(gmsk));
+	out(publicChannel,kPH))|
+	!(in(yellowpagesMO,x:bitstring);
+	out(publicChannel,x)) |
+	!(in(yellowpagesEP,x:bitstring);
+	out(publicChannel,x)) |
+	!(in(yellowpagesCS,x:bitstring);
+	out(publicChannel,x)).
 
-ifdef(`SECRECY',
-(* queries *)
-query attacker(new idEV[]).
-
-process
-	new idEV: ID;
+let createHonestActors()=
 	new idCS: ID;
 	new idEP: ID;
 	new idMO: ID;
 
-	( !out(gpk,GPk(gmsk)) |
-		createEV(idEV) | createCS(idCS) | createEP(idEP) | createMO(idMO)| !DR() | !PH() |
-		(*EVattacker(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) | (*dishonestMO(publicChannel) |*)
-		publishSensitiveInfomation() (*| out(c,choice[idEV,idEV2])*)
+	(!out(gpk,GPk(gmsk)) | !DR() | !PH() |
+	createCS(idCS) | createEP(idEP) | createMO(idMO)).
+
+ifdef(`CORRESPONDANCE',
+`define(`CORRESPONDANCE_SECRECY')'
+free idEV: ID [private].
+(* TODO: queries on events to prove correspondance and injective correspondance properties *)
+dnl query event().
+)
+ifdef(`SECRECY',
+`define(`CORRESPONDANCE_SECRECY')'
+(* queries *)
+free idEV: ID [private].
+query attacker(idEV).
+)
+ifdef(`CORRESPONDANCE_SECRECY',
+
+process
+	(
+		createEV(idEV) | !(new idEV:ID; createEV(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
+		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
 	)
 )
 ifdef(`ANONYMITY',
+dnl Question: is SECRECY <-> ANONYMITY
+free idEV: ID [private].
 
+equivalence
+	(
+		createEV(idEV) | !(new idEV:ID; createEV(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
+		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
+	)
+	(
+		!(new idEV:ID; createEV(idEV) )  | createHonestActors() | publishSensitiveInfomation() |
+		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
+	)
+)
+ifdef(`STRONG_SECRECY',
+
+free idEV: ID [private].
+noninterf idEV.
+
+process
+	(
+		createEV(idEV) | !(new idEV:ID; createEV(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
+		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
+	)
+)
+ifdef(`OFFLINE_GUESSING',
+
+free idEV: ID [private].
+weaksecret idEV.
+
+process
+	(
+		createEV(idEV) | !(new idEV:ID; createEV(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
+		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
+	)
+
+)
+ifdef(`UNLINKABILITY',
+
+equivalence
+	(
+		!(new idEV:ID; createEV(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
+		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) | dishonestMO(publicChannel)
+	)
+	(
+		!(new idEV:ID; createEV_singleinstance(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
+		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) | dishonestMO(publicChannel)
+	)
 )

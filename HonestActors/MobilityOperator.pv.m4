@@ -1,9 +1,10 @@
 (* Mobility Operator *)
 
-table receiptTable(transactID,bitstring).
+free receiptTable: channel [private].
+
 let honestMO(idMO:ID, skMO:skey, chMO:channel, pkMO:pkey) =
 	(* UseCase1 *)
-	(
+	!(
 		(* Get complete SDR + Contract ID *)
 		in(chMO,(sdr:bitstring,contract:ContractID));
 		(* Send Payment+Enc(EP)+transaction number to PH *)
@@ -13,23 +14,30 @@ let honestMO(idMO:ID, skMO:skey, chMO:channel, pkMO:pkey) =
 		in(privateCh,receipt:bitstring);
 		(* Bill the user *)
 		let createSDR(transactionNumber,enc_idEP, payment) = sdr in
-		insert receiptTable(transactionNumber,receipt)
+		!out(receiptTable,(transactionNumber,receipt))
 	) |
 	(* UseCase2 *)
 	(
 		(* Get a dispute verification request with SDR *)
 		in(chMO,(privateCh:channel, sdr:bitstring)); (* il faut utiliser un mecanisme de signature/authentification *)
 		let createSDR(transactionNumber,enc_idEP, payment) = sdr in
-		get receiptTable(=transactionNumber,receipt) in
-		(* Respond with payment receipt if available *)
-		out(privateCh,receipt)
-		else
-		(* Contact the user?? *)
-		0
+		new callback: channel;
+		(
+			in(receiptTable,(=transactionNumber,receipt:bitstring));
+			(
+				out(callback,false) |
+				out(privateCh,receipt) (* Respond with payment receipt if available *)
+			)
+		) |
+		(
+			in(callback,branch:bool);
+			if branch then 0 (* Contact the user?? *)
+		) |
+		( out(callback,true) )
 	).
 
 let createMO(idMO: ID)=
 	new chMO: channel;
 	new skMO: skey;
 	(!out(yellowpagesMO,(idMO,chMO,Pk(skMO))) |
-	!honestMO(idMO,skMO,chMO,Pk(skMO)) ).
+	honestMO(idMO,skMO,chMO,Pk(skMO)) ).

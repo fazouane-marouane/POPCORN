@@ -16,7 +16,7 @@ patterns:
 - name: keyword.operator.proverif
   match: ((^|\t|\ )*\!)|((?<=^|\v|(\h&&[^0-9])|[^\w])((\|)|(&)|(->)|(<->)|(<=>)|(==>)|(and)|(choice)|(forall)|(typeConverter)|(data)|(event)|(fail)|(free)|(new)|(not)|(phase)|(private))(?=^|\v|(\h&&[^0-9])|[^\w]))
 - name: keyword.control.proverif
-  match: (?<=^|\v|(\h&&[^0-9])|[^\w])((type)|(const)|(table)|(get)|(insert)|(in)|(among)|(can)|(clauses)|(elimtrue)|(else)|(equation)|(fun)|(if)|(let)|(noninterf)|(nounif)|(otherwise)|(param)|(putbegin)|(pred)|(process)|(query)|(reduc)|(suchthat)|(then)|(weaksecret)|(where))(?=^|\v|(\h&&[^0-9])|[^\w])
+  match: (?<=^|\v|(\h&&[^0-9])|[^\w])((type)|(equivalence)|(const)|(table)|(get)|(insert)|(in)|(among)|(can)|(clauses)|(elimtrue)|(else)|(equation)|(fun)|(if)|(let)|(noninterf)|(nounif)|(otherwise)|(param)|(putbegin)|(pred)|(process)|(query)|(reduc)|(suchthat)|(then)|(weaksecret)|(where))(?=^|\v|(\h&&[^0-9])|[^\w])
 - name: variable.parameter.proverif
   match: (?<=^|\v|(\h&&[^0-9])|[^\w])((memberOptim)|(decompData)|(decompDataSelect)|(block)|(attacker)|(mess)|(ev)|(evinj))(?=^|\v|(\h&&[^0-9])|[^\w])
 - name: support.type.proverif
@@ -36,5 +36,5 @@ patterns:
 - name: variable.parameter.proverif
   match: (?<=(\(|\,))(\t|\ )*(\w[\w|0-9]*)(\t|\ )*(?=(\)|\,|:))
 - name: variable.language.proverif
-  match: (?<=(let))(\t|\ )*(\w[\w|0-9]*)(\t|\ )*(?=(suchthat)|(in))
+  match: (?<=(let))(\t|\ )+(\w[\w|0-9]*)(\t|\ )+(?=(suchthat)|(in))
 ...
