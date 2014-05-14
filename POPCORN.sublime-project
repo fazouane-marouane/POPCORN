@@ -41,6 +41,12 @@
 			"cmd": ["gen.sh"],
 			"working_dir":"$project_path",
 			"shell": true
+		},
+		{
+			"name": "Proverif",
+			"cmd": ["C:/Proverif/proverif.exe","-in","pitype","$file"],
+			"working_dir":"$project_path",
+			"shell": true
 		}
 	]
 }
