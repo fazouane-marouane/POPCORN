@@ -37,16 +37,14 @@
 			"shell_cmd": "ls -l"
 		},
 		{
-			"name": "Build",
-			"cmd": ["gen.sh"],
+			"name": "Proverif.m4",
+			"cmd": ["./gen.sh"],
 			"working_dir":"$project_path",
 			"shell": true
 		},
 		{
 			"name": "Proverif",
-			"cmd": ["C:/Proverif/proverif.exe","-in","pitype","$file"],
-			"working_dir":"$project_path",
-			"shell": true
+			"cmd": ["proverif","-in","pitype","$file"]
 		}
 	]
 }
