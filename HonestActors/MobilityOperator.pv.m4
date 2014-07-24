@@ -14,6 +14,7 @@ let honestMO(idMO:ID, skMO:skey, chMO:channel, pkMO:pkey) =
 		in(privateCh,receipt:bitstring);
 		(* Bill the user *)
 		let createSDR(transactionNumber,enc_idEP, payment) = sdr in
+		event exit_MO1;
 		!out(receiptTable,(transactionNumber,receipt))
 	) |
 	(* UseCase2 *)
@@ -25,8 +26,9 @@ let honestMO(idMO:ID, skMO:skey, chMO:channel, pkMO:pkey) =
 		(
 			in(receiptTable,(=transactionNumber,receipt:bitstring));
 			(
-				out(callback,false) |
-				out(privateCh,receipt) (* Respond with payment receipt if available *)
+				(out(callback,false);event exit_MO2) |
+				(out(privateCh,receipt);event exit_MO3) (* Respond with payment receipt if available *)
+
 			)
 		) |
 		(

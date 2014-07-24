@@ -7,6 +7,10 @@ set traceDisplay = short.
 set movenew = true.
 
 event exit.
+event exit_PH.
+event exit_MO1.
+event exit_MO2.
+event exit_MO3.
 
 (* Identifiers *)
 type ID. (* Actor's Identifier *)
@@ -24,7 +28,7 @@ free yellowpagesEV: channel [private].
 free yellowpagesCS: channel [private].
 free yellowpagesEP: channel [private].
 free yellowpagesMO: channel [private].
-
+free yellowpagesPH: channel [private].
 
 include(`HonestActors/_HonestActors.pv.m4')
 include(`DishonestActors/_DishonestActors.pv.m4')
@@ -33,21 +37,23 @@ include(`DishonestActors/_DishonestActors.pv.m4')
 free publicChannel: channel.
 
 let publishSensitiveInfomation()=
-	(out(publicChannel,GPk(gmsk));
-	out(publicChannel,kPH))|
+	(out(publicChannel,GPk(gmsk)))|
 	!(in(yellowpagesMO,x:bitstring);
 	out(publicChannel,x)) |
 	!(in(yellowpagesEP,x:bitstring);
 	out(publicChannel,x)) |
 	!(in(yellowpagesCS,x:bitstring);
+	out(publicChannel,x)) |
+	!(in(yellowpagesPH,x:bitstring);
 	out(publicChannel,x)).
 
 let createHonestActors()=
 	new idCS: ID;
 	new idEP: ID;
 	new idMO: ID;
+	new skPH: skey;
 
-	(!out(gpk,GPk(gmsk)) | !DR() | !PH() |
+	(!out(gpk,GPk(gmsk)) | !DR() | !out(yellowpagesPH,Pk(skPH)) | !PH(skPH) |
 	createCS(idCS) | createEP(idEP) | createMO(idMO)).
 
 

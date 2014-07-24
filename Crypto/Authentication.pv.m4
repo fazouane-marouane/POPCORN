@@ -17,7 +17,7 @@ let authServer_unilateral(server:channel, skServer:skey, callback:channel) =
 	out(callback, privateCh).
 
 
-(* II. Bilateral authetication*)
+(* II. Bilateral authentication*)
 
 (* II.1. Client side authentication *)
 let authClient_bilateral(server:channel, skClient:skey, pkServer:pkey, callback:channel) =
