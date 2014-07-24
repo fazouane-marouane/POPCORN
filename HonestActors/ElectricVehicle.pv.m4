@@ -16,7 +16,7 @@ let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, credEV:anonymousCred,
 	event selectCS(idEV,idCS);
 	(* connect securely to the CS *)
 	new callback:channel;
-	authClient(chCS,gskEV,pkCS,callback) |
+	authClient_bilateral(chCS,gskEV,pkCS,callback) |
 	in(callback,privateCh:channel);
 	event securelyConnectedToCS(idEV,idCS);
 	(* Show anonymous credentials proof to CS *)
@@ -34,7 +34,8 @@ let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, credEV:anonymousCred,
 	event getSDR(idEV,idCS);
 	(* Submit the SDR+ Contract ID to MO *)
 	out(chMO,(sdr,contract));
-	event sendSDRToMO(idEV,idCS,idMO).
+	dnl event sendSDRToMO(idEV,idCS,idMO);
+	event exit().
 
 (* creates and registers n vehicles/users*)
 let createEV(idEV:ID)=

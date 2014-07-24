@@ -6,6 +6,8 @@ set displayDerivation = false .
 set traceDisplay = short.
 set movenew = true.
 
+event exit.
+
 (* Identifiers *)
 type ID. (* Actor's Identifier *)
 fun ID_to_bitstring(ID): bitstring [data, typeConverter].
@@ -48,11 +50,13 @@ let createHonestActors()=
 	(!out(gpk,GPk(gmsk)) | !DR() | !PH() |
 	createCS(idCS) | createEP(idEP) | createMO(idMO)).
 
+
 ifdef(`CORRESPONDANCE',
 `define(`CORRESPONDANCE_SECRECY')'
 free idEV: ID [private].
 (* TODO: queries on events to prove correspondance and injective correspondance properties *)
 dnl query event().
+query event(exit).
 )
 ifdef(`SECRECY',
 `define(`CORRESPONDANCE_SECRECY')'

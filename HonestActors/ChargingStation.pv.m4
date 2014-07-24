@@ -5,8 +5,9 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID, pkCS:pkey, chEP:channel,
 	(* connect securely to an electric vehicle (EV) *)
 	new callback: channel;
 	in(gpk,gpk_:pkey);
-	authServer(chCS,skCS,gpk_,callback) |
+	authServer_bilateral(chCS,skCS,gpk_,callback) |
 	in(callback,privateCh:channel);
+	event exit();
 	(*event securelyConnectedToEV(idCS,idEV);*)
 	(* verify the credentials *)
 	in(privateCh,credEV:anonymousCred);
@@ -26,8 +27,10 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID, pkCS:pkey, chEP:channel,
 		let sdr=createSDR(trid, senc(ID_to_bitstring(idEP),kPH), payment) in
 		out(privateCh,sdr);
 		(* Send anonymously Commits+SDR to the EP *)
-		out(chEP,(sdr,signedMeterReading)) (* Il faut utiliser ici un mecanisme d'authentification/signature *)
-	).
+		out(chEP,(sdr,signedMeterReading)); (* Il faut utiliser ici un mecanisme d'authentification/signature *)
+		event exit()
+	)
+	else event exit().
 
 let createCS(idCS: ID)=
 	new chCS: channel;
