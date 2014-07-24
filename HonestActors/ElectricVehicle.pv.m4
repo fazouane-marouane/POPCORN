@@ -16,7 +16,7 @@ let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, credEV:anonymousCred,
 	event selectCS(idEV,idCS);
 	(* connect securely to the CS *)
 	new callback:channel;
-	authClient_bilateral(chCS,gskEV,pkCS,callback) |
+	authClient_unilateral(chCS,pkCS,callback) |
 	in(callback,privateCh:channel);
 	event securelyConnectedToCS(idEV,idCS);
 	(* Show anonymous credentials proof to CS *)
@@ -34,8 +34,7 @@ let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, credEV:anonymousCred,
 	event getSDR(idEV,idCS);
 	(* Submit the SDR+ Contract ID to MO *)
 	out(chMO,(sdr,contract));
-	dnl event sendSDRToMO(idEV,idCS,idMO);
-	event exit().
+	event sendSDRToMO(idEV,idCS,idMO).
 
 (* creates and registers n vehicles/users*)
 let createEV(idEV:ID)=
@@ -47,7 +46,7 @@ let createEV(idEV:ID)=
 	!(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),anonymcred)) |
 	honestEV(idEV,chUser,skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),anonymcred,idMO,chMO,pkMO,createContractID(idEV)) ).
 
-(* creates and registers n vehicles/users*)
+(* creates and registers n vehicles/users*) 
 let createEV_singleinstance(idEV:ID)=
 	new skEV:skey;
 	new chUser:channel;

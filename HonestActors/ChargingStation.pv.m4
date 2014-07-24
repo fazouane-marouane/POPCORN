@@ -5,9 +5,8 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID, pkCS:pkey, chEP:channel,
 	(* connect securely to an electric vehicle (EV) *)
 	new callback: channel;
 	in(gpk,gpk_:pkey);
-	authServer_bilateral(chCS,skCS,gpk_,callback) |
+	authServer_unilateral(chCS,skCS,callback) |
 	in(callback,privateCh:channel);
-	event exit();
 	(*event securelyConnectedToEV(idCS,idEV);*)
 	(* verify the credentials *)
 	in(privateCh,credEV:anonymousCred);
@@ -27,10 +26,8 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID, pkCS:pkey, chEP:channel,
 		let sdr=createSDR(trid, senc(ID_to_bitstring(idEP),kPH), payment) in
 		out(privateCh,sdr);
 		(* Send anonymously Commits+SDR to the EP *)
-		out(chEP,(sdr,signedMeterReading)); (* Il faut utiliser ici un mecanisme d'authentification/signature *)
-		event exit()
-	)
-	else event exit().
+		out(chEP,(sdr,signedMeterReading)) (* Il faut utiliser ici un mecanisme d'authentification/signature *)
+	).
 
 let createCS(idCS: ID)=
 	new chCS: channel;
@@ -38,3 +35,11 @@ let createCS(idCS: ID)=
 	in(yellowpagesEP,(idEP:ID,chEP:channel,pkEP:pkey));
 	(!out(yellowpagesCS,(idCS,chCS,idEP,Pk(skCS))) |
 	!honestCS(idCS,skCS,chCS,idEP,Pk(skCS),chEP,pkEP)).
+
+let createCS_singleinstance(idCS: ID)=
+	new chCS: channel;
+	new skCS: skey;
+	in(yellowpagesEP,(idEP:ID,chEP:channel,pkEP:pkey));
+	(!out(yellowpagesCS,(idCS,chCS,idEP,Pk(skCS))) |
+	honestCS(idCS,skCS,chCS,idEP,Pk(skCS),chEP,pkEP)).
+

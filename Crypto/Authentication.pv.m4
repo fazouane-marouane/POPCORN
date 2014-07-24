@@ -4,7 +4,7 @@
 
 (* I.1. Client side authentication *)
 let authClient_unilateral(server:channel, pkServer:pkey, callback:channel) =
-	new k:nonce;
+	new k:bitstring;
 	new privateCh:channel;
 	out(server, (privateCh,k));
 	in(privateCh,m:bitstring);
@@ -21,7 +21,7 @@ let authServer_unilateral(server:channel, skServer:skey, callback:channel) =
 
 (* II.1. Client side authentication *)
 let authClient_bilateral(server:channel, skClient:skey, pkServer:pkey, callback:channel) =
-	new k:nonce;
+	new k:bitstring;
 	new privateCh:channel;
 	out(server,Sign((privateCh,k),skClient));
 	in(privateCh,m:bitstring);

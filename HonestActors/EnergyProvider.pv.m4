@@ -25,3 +25,9 @@ let createEP(idEP: ID)=
 	new skEP: skey;
 	(!out(yellowpagesEP,(idEP,chEP,Pk(skEP)))|
 	!honestEP(idEP,skEP,chEP,Pk(skEP)) ).
+
+let createEP_singleinstance(idEP: ID)=
+	new chEP: channel;
+	new skEP: skey;
+	(!out(yellowpagesEP,(idEP,chEP,Pk(skEP)))|
+	honestEP(idEP,skEP,chEP,Pk(skEP)) ).

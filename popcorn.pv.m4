@@ -77,11 +77,13 @@ dnl Question: is SECRECY <-> ANONYMITY ??
 
 equivalence
 	(
-		(in(publicChannel,idEV:ID); createEV_singleinstance(idEV) ) | !(new idEV:ID; createEV_singleinstance(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
+		new privateChannel: channel;
+		(new idEV0:ID;out(privateChannel,idEV0)) |(new idEV:ID; in(privateChannel,idEV0:ID); createEV(idEV0) ) | !(new idEV:ID; createEV_singleinstance(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
 		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
 	)
 	(
-		(new idEV:ID; in(publicChannel,idEV0:ID); createEV_singleinstance(idEV) ) | !(new idEV:ID; createEV_singleinstance(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
+		new privateChannel: channel;
+		(new idEV0:ID;out(privateChannel,idEV0)) |(new idEV:ID; in(privateChannel,idEV0:ID); createEV(idEV) ) | !(new idEV:ID; createEV_singleinstance(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
 		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
 	)
 )
