@@ -9,9 +9,9 @@ let DR(skDR: skey) =
 	new callback: channel;
 	authServer_unilateral(chDR,skDR,callback) |
 	(
-		in(callback,privateCh:channel);
+		in(callback,privateCh_EP:channel);
 		(* Get dispute: Commits+SDR *)
-		in(privateCh, (sdr:bitstring,commits:bitstring));
+		in(privateCh_EP, (sdr:bitstring,commits:bitstring));
 		(* Uncover the EV-ID(Commits) *)
 		let idEV = guncover(commits,gmsk) in
 		in(yellowpagesEV,(=idEV,chEV:channel,idMO:ID,contract:ContractID,skEV:skey,gskEV:skey,credEV:bitstring));
@@ -20,14 +20,13 @@ let DR(skDR: skey) =
 		new callback: channel;
 		authClient_unilateral(chMO,pkMO,callback) |
 		(
-			in(callback,privateCh:channel);
-			out(privateCh,sdr);
+			in(callback,privateCh_MO:channel);
+			out(privateCh_MO,sdr);
 			(* Get response *)
-			in(privateCh,receipt:bitstring)
+			in(privateCh_MO,receipt:bitstring);
 			(* Do something with the receipt *)
-			dnl else
+			out(privateCh_EP,receipt)
 			(* contact the user?? *)
-			dnl 0
 		)
 	)
 	.
