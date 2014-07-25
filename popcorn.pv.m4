@@ -29,6 +29,7 @@ free yellowpagesCS: channel [private].
 free yellowpagesEP: channel [private].
 free yellowpagesMO: channel [private].
 free yellowpagesPH: channel [private].
+free yellowpagesDR: channel [private].
 
 include(`HonestActors/_HonestActors.pv.m4')
 include(`DishonestActors/_DishonestActors.pv.m4')
@@ -52,9 +53,12 @@ let createHonestActors()=
 	new idEP: ID;
 	new idMO: ID;
 	new skPH: skey;
+	new skDR: skey;
 
-	(!out(gpk,GPk(gmsk)) | !DR() | !out(yellowpagesPH,Pk(skPH)) | !PH(skPH) |
-	createCS(idCS) | createEP(idEP) | createMO(idMO)).
+	(!out(gpk,GPk(gmsk)) |
+	 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
+	 !PH(skPH) | !out(yellowpagesPH,Pk(skPH)) |
+	 createCS(idCS) | createEP(idEP) | createMO(idMO)).
 
 
 ifdef(`CORRESPONDANCE',

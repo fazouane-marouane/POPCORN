@@ -28,23 +28,28 @@ let honestMO(idMO:ID, skMO:skey, chMO:channel, pkMO:pkey) =
 	) |
 	(* UseCase2 *)
 	(
-		(* Get a dispute verification request with SDR *)
-		in(chMO,(privateCh:channel, sdr:bitstring)); (* il faut utiliser un mecanisme de signature/authentification *)
-		let createSDR(transactionNumber,enc_idEP, payment) = sdr in
 		new callback: channel;
+		authServer_unilateral(chMO,skMO,callback) |
 		(
-			in(receiptTable,(=transactionNumber,receipt:bitstring));
+			in(callback,privateCh:channel);
+			(* Get a dispute verification request with SDR *)
+			in(privateCh,sdr:bitstring); (* il faut utiliser un mecanisme de signature/authentification *)
+			let createSDR(transactionNumber,enc_idEP, payment) = sdr in
+			new callback: channel;
 			(
-				(out(callback,false);event exit_MO2) |
-				(out(privateCh,receipt);event exit_MO3) (* Respond with payment receipt if available *)
+				in(receiptTable,(=transactionNumber,receipt:bitstring));
+				(
+					(out(callback,false);event exit_MO2) |
+					(out(privateCh,receipt);event exit_MO3) (* Respond with payment receipt if available *)
 
-			)
-		) |
-		(
-			in(callback,branch:bool);
-			if branch then 0 (* Contact the user?? *)
-		) |
-		( out(callback,true) )
+				)
+			) |
+			(
+				in(callback,branch:bool);
+				if branch then 0 (* Contact the user?? *)
+			) |
+			( out(callback,true) )
+		)
 	).
 
 let createMO(idMO: ID)=
