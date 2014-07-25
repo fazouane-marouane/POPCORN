@@ -19,8 +19,7 @@ reduc forall k: skey, v: bitstring; RecoverData(Sign(v,k)) = v.
 reduc forall m:bitstring, k:bitstring, gmsk: gmskey; guncover(Sign(m,GKeygen(gmsk,k)),gmsk) = k.
 dnl reduc forall k: skey; Sk(Pk(k))=k [private].
 
-(* blind signatures?? *)
 (* Blind signatures *)
-fun blind(bitstring, key): bitstring.
-fun unblind(bitstring, key): bitstring.
-equation forall x: bitstring, y: skey, z:key; unblind(Sign(blind(x,z),y),z) = Sign(x,y).
+dnl fun blind(bitstring, key): bitstring.
+dnl fun unblind(bitstring, key): bitstring.
+dnl equation forall x: bitstring, y: skey, z:key; unblind(Sign(blind(x,z),y),z) = Sign(x,y).

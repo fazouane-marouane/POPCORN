@@ -10,7 +10,7 @@ let DR() =
 	in(chDR, (sdr:bitstring,commits:bitstring));
 	(* Uncover the EV-ID(Commits) *)
 	let idEV = guncover(commits,gmsk) in
-	in(yellowpagesEV,(=idEV,chEV:channel,idMO:ID,contract:ContractID,skEV:skey,gskEV:skey,credEV:anonymousCred));
+	in(yellowpagesEV,(=idEV,chEV:channel,idMO:ID,contract:ContractID,skEV:skey,gskEV:skey,credEV:bitstring));
 	in(yellowpagesMO,(=idMO,chMO:channel,pkMO:pkey));
 	(* Verify Dispute(Send SDR to MO) *)
 	new privateCh: channel;

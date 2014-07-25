@@ -74,7 +74,7 @@ ifdef(`CORRESPONDANCE_SECRECY',
 
 process
 	(
-		createEV(idEV) | !(new idEV:ID; createEV(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
+		createEV(idEV) (*| !(new idEV:ID; createEV(idEV) )*) | createHonestActors() | publishSensitiveInfomation() |
 		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
 	)
 )
@@ -121,10 +121,10 @@ ifdef(`UNLINKABILITY',
 equivalence
 	(
 		!(new idEV:ID; createEV(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
-		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) | dishonestMO(publicChannel)
+		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
 	)
 	(
 		!(new idEV:ID; createEV_singleinstance(idEV) ) | createHonestActors() | publishSensitiveInfomation() |
-		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) | dishonestMO(publicChannel)
+		(*dishonestEV(publicChannel) |*) dishonestCS(publicChannel) | dishonestEP(publicChannel) (*| dishonestMO(publicChannel)*)
 	)
 )

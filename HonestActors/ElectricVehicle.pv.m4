@@ -9,7 +9,7 @@ event sendSignedCommits(ID,ID).
 event getSDR(ID,ID).
 event sendSDRToMO(ID,ID,ID).
 
-let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, credEV:anonymousCred, idMO:ID, chMO:channel, pkMO:pkey, contract:ContractID) =
+let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, m:bitstring, open:Open, credEV: bitstring, idMO:ID, chMO:channel, pkMO:pkey, contract:ContractID) =
 	(* get infos*)
 	(* select a charging station (CS) *)
 	in(yellowpagesCS,(idCS:ID, chCS:channel, idEP:ID, pkCS:pkey) );
@@ -20,7 +20,8 @@ let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, credEV:anonymousCred,
 	in(callback,privateCh:channel);
 	event securelyConnectedToCS(idEV,idCS);
 	(* Show anonymous credentials proof to CS *)
-	out(privateCh,credEV); (* comment se proteger du partage du credEV? *)
+	in(yellowpagesPH,pkPH: pkey);
+	out(privateCh,(Commit(m,open),Prove(pkPH,m,credEV))); (* comment se proteger du partage du credEV? *)
 	event showAnonymousCredentials(idEV,idCS);
 	(* The response at this point is positive *)
 	(* 1.1 Get the meter reading *)
@@ -33,26 +34,37 @@ let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, credEV:anonymousCred,
 	in(privateCh,sdr:bitstring);
 	event getSDR(idEV,idCS);
 	(* Submit the SDR+ Contract ID to MO *)
-	out(chMO,(sdr,contract));
-	event sendSDRToMO(idEV,idCS,idMO).
+	new callback:channel;
+	authClient_unilateral(chMO,pkMO,callback) |
+	(
+		in(callback,privateCh:channel);
+		out(callback,(sdr,contract));
+		event sendSDRToMO(idEV,idCS,idMO);
+		event exit
+	).
 
 (* creates and registers n vehicles/users*)
 let createEV(idEV:ID)=
 	new skEV:skey;
 	new chUser:channel;
-	new k:bitstring;
-	let anonymcred = createAnonymousCred(idEV,createValidCred(idEV,k)) in
+	new m:bitstring;
+	new open: Open;
+	in(yellowpagesPH,pkPH: pkey);
+	let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 	in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
 	!(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),anonymcred)) |
-	honestEV(idEV,chUser,skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),anonymcred,idMO,chMO,pkMO,createContractID(idEV)) ).
+	honestEV(idEV,chUser,skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),m,open,anonymcred,idMO,chMO,pkMO,createContractID(idEV)) ).
 
 (* creates and registers n vehicles/users*) 
 let createEV_singleinstance(idEV:ID)=
 	new skEV:skey;
 	new chUser:channel;
-	new k:bitstring;
-	let anonymcred = createAnonymousCred(idEV,createValidCred(idEV,k)) in
+	new m:bitstring;
+	new open: Open;
+	in(yellowpagesPH,pkPH: pkey);
+	dnl let anonymcred = createAnonymousCred(idEV,createValidCred(idEV,k)) in
+	let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 	in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
 	(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),anonymcred)) |
-	honestEV(idEV,chUser,skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),anonymcred,idMO,chMO,pkMO,createContractID(idEV)) ).
+	honestEV(idEV,chUser,skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),m,open,anonymcred,idMO,chMO,pkMO,createContractID(idEV)) ).
 
