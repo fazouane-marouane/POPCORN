@@ -9,7 +9,6 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID, pkCS:pkey, chEP:channel,
 		in(callback,privateCh:channel);
 		(*event securelyConnectedToEV(idCS,idEV);*)
 		(* verify the credentials *)
-		event exit;
 		in(privateCh,(com:Commitment,credEV_anonymousProof:Proof));
 		in(yellowpagesPH,pkPH:pkey);
 		if VerifyProof(pkPH,com,credEV_anonymousProof) then

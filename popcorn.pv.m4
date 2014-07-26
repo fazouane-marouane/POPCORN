@@ -12,17 +12,7 @@ event exit_MO1.
 event exit_MO2.
 event exit_MO3.
 
-(* Identifiers *)
-type ID. (* Actor's Identifier *)
-fun ID_to_bitstring(ID): bitstring [data, typeConverter].
-
-(* Cryptographic primitives *)
-include(`Crypto/Crypto.pv.m4')
-(* sdr *)
-type transactID.
-fun createReceipt(transactID): bitstring [private].
-fun createSDR(transactID, bitstring, bitstring): bitstring [data].
-
+free publicChannel: channel.
 (* N.b. the yellow pages are not visible to the adversary *)
 free yellowpagesEV: channel [private].
 free yellowpagesCS: channel [private].
@@ -31,11 +21,12 @@ free yellowpagesMO: channel [private].
 free yellowpagesPH: channel [private].
 free yellowpagesDR: channel [private].
 
+(* Cryptographic primitives *)
+include(`Crypto/Crypto.pv.m4')
 include(`HonestActors/_HonestActors.pv.m4')
 include(`DishonestActors/_DishonestActors.pv.m4')
 
 (* main process *)
-free publicChannel: channel.
 
 let publishSensitiveInfomation()=
 	(out(publicChannel,GPk(gmsk)))|
@@ -54,7 +45,6 @@ let createHonestActors()=
 	new idMO: ID;
 	new skPH: skey;
 	new skDR: skey;
-
 	(!out(gpk,GPk(gmsk)) |
 	 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 	 !PH(skPH) | !out(yellowpagesPH,Pk(skPH)) |
@@ -63,44 +53,46 @@ let createHonestActors()=
 
 ifdef(`CORRESPONDANCE',
 free idEV: ID [private].
-(* TODO: queries on events to prove correspondance and injective correspondance properties *)
-dnl query event().
-query event(exit).
+dnl query event(exit).
+dnl query event(exit_MO3).
 
 process
 	(
-		createEV(idEV) |
-		| (new skPH: skey;new skDR: skey;
+		createEV(idEV,dummy,dummy) |
+		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
-		publishSensitiveInfomation() |
-		!dishonestEV(publicChannel) | !dishonestCS(publicChannel) | !dishonestEP(publicChannel) | !dishonestMO(publicChannel)
+		publishSensitiveInfomation() | (new idMO: ID; createMO(idMO)) |
+		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
+
 ifdef(`SECRECY1',
 
 (* queries *)
 free idEV: ID [private].
 query attacker(idEV).
 
+dnl (new idEP: ID; createMO(idEP)) |
+
 process
 	(
-		createEV(idEV) | createHonestActors() | publishSensitiveInfomation() |
-		dishonestCS(publicChannel) | dishonestEP(publicChannel)
+		createEV(idEV,dummy,dummy) | createHonestActors() | publishSensitiveInfomation() |
+		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO() 
 	)
 )
 
 ifdef(`SECRECY2',
 
 (* queries *)
-free idEV: ID [private].
-query attacker(new idEP[]).
+free idEP: ID [private].
+query attacker(idEP).
 
 process
 	(
-		createEV(idEV) | createHonestActors() | publishSensitiveInfomation() |
-		dishonestCS(publicChannel) | dishonestMO(publicChannel) 
+		(new idEV:ID; createEV(idEV,idEP,dummy)) | createHonestActors() | publishSensitiveInfomation() |
+		!dishonestEV() | !dishonestCS() | !dishonestMO() 
 	)
 )
 
@@ -111,31 +103,49 @@ free privateChannel: channel [private].
 
 process
 	(
-		(new idEV0:ID;out(privateChannel,idEV0)) | (new idEV:ID; in(privateChannel,idEV0:ID); createEV(choice[idEV,idEV0]) ) |
+		(new idEV0:ID;out(privateChannel,idEV0)) | (new idEV:ID; in(privateChannel,idEV0:ID); createEV(choice[idEV,idEV0],dummy,dummy) ) |
 		!(new idEV:ID; createEV(idEV) ) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
 		publishSensitiveInfomation() |
-		dishonestEV(publicChannel) | dishonestCS(publicChannel) | dishonestEP(publicChannel) | dishonestMO(publicChannel)
+		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
 
-ifdef(`STRONG_SECRECY',
+ifdef(`STRONG_SECRECY1',
 
 free idEV: ID [private].
 free idEV0: ID [private].
 
 process
 	(
-		createEV(choice[idEV,idEV0]) | !(new idEV:ID; createEV(idEV) ) |
+		createEV(choice[idEV,idEV0],dummy,dummy) | !(new idEV:ID; createEV(idEV,dummy,dummy) ) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
 		publishSensitiveInfomation() |
-		dishonestEV(publicChannel) | dishonestCS(publicChannel) | dishonestEP(publicChannel) | dishonestMO(publicChannel)
+		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+	)
+)
+
+ifdef(`STRONG_SECRECY2',
+
+free idEP: ID [private].
+free idEP0: ID [private].
+
+process
+	(
+		createEP(idEP) |
+		(new idEV:ID; createEV(idEV,choice[idEP,idEP0],dummy)) | !(new idEV:ID; createEV(idEV,dummy,dummy) ) |
+		(new skPH: skey;new skDR: skey;
+			(!out(gpk,GPk(gmsk)) |
+			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
+			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		publishSensitiveInfomation() |
+		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
 
@@ -144,25 +154,41 @@ free idEV: ID [private].
 
 process
 	(
-		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV(idEV)) | !(new idEV:ID; createEV(idEV) ) |
+		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV(idEV,dummy,dummy)) | !(new idEV:ID; createEV(idEV,dummy,dummy) ) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
 		publishSensitiveInfomation() |
-		dishonestEV(publicChannel) | dishonestCS(publicChannel) | dishonestEP(publicChannel) | dishonestMO(publicChannel)
+		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
 
-ifdef(`UNLINKABILITY',
+ifdef(`UNLINKABILITY1',
+
 process
 	(
-		!(new idEV:ID; if choice[false,true] then createEV(idEV) else createEV_singleinstance(idEV) ) |
-		| (new skPH: skey;new skDR: skey;
+		!(new idEV:ID; if choice[false,true] then createEV(idEV,dummy,dummy) else createEV_singleinstance(idEV,dummy,dummy) ) |
+		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
 		publishSensitiveInfomation() |
-		!dishonestEV(publicChannel) | !dishonestCS(publicChannel) | !dishonestEP(publicChannel) | !dishonestMO(publicChannel)
+		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+	)
+)
+
+ifdef(`UNLINKABILITY2',
+free idEP: ID [private].
+
+process
+	(
+		createEP(idEP) | !(new idEV:ID; createEV(idEV,choice[idEP,dummy],dummy) ) |
+		(new skPH: skey;new skDR: skey;
+			(!out(gpk,GPk(gmsk)) |
+			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
+			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		publishSensitiveInfomation() |
+		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
