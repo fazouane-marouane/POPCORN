@@ -3,4 +3,4 @@ let dishonestMO(c: channel)=
 	new chMO: channel;
 	new skMO: skey;
 	(!out(yellowpagesMO,(idMO,chMO,Pk(skMO))) |
-	out(c,(idMO,chMO,Pk(skMO))) ).
+	out(c,(idMO,chMO,skMO)) ).

@@ -5,4 +5,4 @@ let dishonestCS(c: channel) =
 	in(yellowpagesEP,(idEP:ID,chEP:channel,pkEP:pkey));
 	(!out(yellowpagesCS,(idCS,chCS,idEP,Pk(skCS)) ) |
 	out(c,(idEP,chEP,pkEP));
-	out(c,(idCS,chCS,idEP,Pk(skCS))) ).
+	out(c,(idCS,chCS,idEP,skCS)) ).

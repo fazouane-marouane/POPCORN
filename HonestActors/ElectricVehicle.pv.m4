@@ -21,7 +21,8 @@ let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, m:bitstring, open:Ope
 	event securelyConnectedToCS(idEV,idCS);
 	(* Show anonymous credentials proof to CS *)
 	in(yellowpagesPH,pkPH: pkey);
-	out(privateCh,(Commit(m,open),Prove(pkPH,m,credEV))); (* comment se proteger du partage du credEV? *)
+	out(privateCh,(Commit(m,open),Prove(pkPH,m,credEV)));
+	event exit;
 	event showAnonymousCredentials(idEV,idCS);
 	(* The response at this point is positive *)
 	(* 1.1 Get the meter reading *)
@@ -62,7 +63,6 @@ let createEV_singleinstance(idEV:ID)=
 	new m:bitstring;
 	new open: Open;
 	in(yellowpagesPH,pkPH: pkey);
-	dnl let anonymcred = createAnonymousCred(idEV,createValidCred(idEV,k)) in
 	let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 	in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
 	(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),anonymcred)) |
