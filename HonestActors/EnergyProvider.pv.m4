@@ -14,10 +14,19 @@ let honestEP(idEP: ID,skEP:skey, chEP:channel, pkEP:pkey)=
 	(
 		(* waits 10 time units before reporting a dispute to DR *)
 		new callback: channel;
-		(in(PaidSessions,=transactionNumber); out(callback, true) |
-		in(callback,branch:bool); if branch then out(chDR, (sdr,commits)) (* report to DR *) |
+		(
+			in(PaidSessions,=transactionNumber);
+			out(callback, false)
+		)|
+		(
+			in(callback,branch:bool);
+			if branch then
+			(
+				out(chDR, (sdr,commits)); (* report to DR *)
+				event exit_EP
+			)
+		)|
 		out(callback,true)
-		)
 	).
 
 let createEP(idEP: ID)=

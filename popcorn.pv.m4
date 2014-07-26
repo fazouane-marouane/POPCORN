@@ -8,6 +8,9 @@ set movenew = true.
 
 event exit.
 event exit_PH.
+event exit_DR.
+event exit_CS.
+event exit_EP.
 event exit_MO1.
 event exit_MO2.
 event exit_MO3.
@@ -55,16 +58,14 @@ ifdef(`CORRESPONDANCE',
 free idEV: ID [private].
 dnl query event(exit).
 dnl query event(exit_MO3).
+query event(exit_CS).
 
 process
 	(
 		createEV(idEV,dummy,dummy) |
-		(new skPH: skey;new skDR: skey;
-			(!out(gpk,GPk(gmsk)) |
-			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
-			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		createHonestActors() |
 		publishSensitiveInfomation() | (new idMO: ID; createMO(idMO)) |
-		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+		!dishonestEV() | !dishonestCS() | !dishonestMO()
 	)
 )
 

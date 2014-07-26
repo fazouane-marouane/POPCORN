@@ -25,8 +25,9 @@ let DR(skDR: skey) =
 			(* Get response *)
 			in(privateCh_MO,receipt:bitstring);
 			(* Do something with the receipt *)
-			out(privateCh_EP,receipt)
+			out(privateCh_EP,receipt);
 			(* contact the user?? *)
+			event exit_DR
 		)
 	)
 	.
