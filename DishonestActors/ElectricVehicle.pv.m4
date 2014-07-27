@@ -5,7 +5,7 @@ let dishonestEV()=
 	new chUser:channel;
 	new m:bitstring;
 	new open: Open;
-	in(yellowpagesPH,pkPH: pkey);
+	in(yellowpagesPH,(pkPH: pkey,chPH:channel));
 	let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 	in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
 	(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |

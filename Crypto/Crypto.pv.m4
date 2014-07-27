@@ -1,6 +1,7 @@
 dnl symetric asymetric encryption
 (* Identifiers *)
 type nonce.
+type MeterReading.
 type ID. (* Actor's Identifier *)
 fun ID_to_bitstring(ID): bitstring [data, typeConverter].
 const dummy: ID [private].

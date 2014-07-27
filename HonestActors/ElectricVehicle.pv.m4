@@ -25,15 +25,15 @@ let honestEV2(idEP:ID, idEV:ID, chEV:channel, skEV:skey, gskEV:skey, m:bitstring
 		let trid = createTransactionID(idEP,k) in
 		out(privateCh,trid);
 		(* Show anonymous credentials proof to CS *)
-		in(yellowpagesPH,pkPH: pkey);
+		in(yellowpagesPH,(pkPH: pkey,chPH:channel));
 		out(privateCh,(Commit(m,open),Prove(pkPH,m,credEV)));
 		event showAnonymousCredentials(idEV,idCS);
 		(* The response at this point is positive *)
 		(* 1.1 Get the meter reading *)
-		in(privateCh,meterReading:bitstring);
+		in(privateCh,(meterReading:MeterReading,k:nonce));
 		event sessionStarted(idEV,idCS);
 		(* 1.2 Commit with group signature *)
-		out(privateCh,Sign(meterReading,gskEV));
+		out(privateCh,(Sign((meterReading,k),gskEV),k));
 		event sendSignedCommits(idEV,idCS);
 		(* Get Partial SDR with encrypted EP *)
 		in(privateCh,sdr:SDR);
@@ -69,15 +69,15 @@ let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, m:bitstring, open:Ope
 		let trid = createTransactionID(idEP,k) in
 		out(privateCh,trid);
 		(* Show anonymous credentials proof to CS *)
-		in(yellowpagesPH,pkPH: pkey);
+		in(yellowpagesPH,(pkPH: pkey,chPH:channel));
 		out(privateCh,(Commit(m,open),Prove(pkPH,m,credEV)));
 		event showAnonymousCredentials(idEV,idCS);
 		(* The response at this point is positive *)
 		(* 1.1 Get the meter reading *)
-		in(privateCh,meterReading:bitstring);
+		in(privateCh,(meterReading:MeterReading,k:nonce));
 		event sessionStarted(idEV,idCS);
 		(* 1.2 Commit with group signature *)
-		out(privateCh,Sign(meterReading,gskEV));
+		out(privateCh,(Sign((meterReading,k),gskEV),k));
 		event sendSignedCommits(idEV,idCS);
 		(* Get Partial SDR with encrypted EP *)
 		in(privateCh,sdr:SDR);
@@ -92,7 +92,8 @@ let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, m:bitstring, open:Ope
 		(
 			in(callback,privateCh:channel);
 			out(privateCh,(sdr,contract));
-			event exit;
+			event exit_EV;
+			out(publicChannel, idEV);
 			event sendSDRToMO(idEV,idCS,idMO)
 		)
 	).
@@ -103,7 +104,7 @@ let createEV(idEV:ID)=
 		new chUser:channel;
 		new m:bitstring;
 		new open: Open;
-		in(yellowpagesPH,pkPH: pkey);
+		in(yellowpagesPH,(pkPH: pkey,chPH:channel));
 		let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 		in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
 		!(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
@@ -114,7 +115,7 @@ let createEV2(idEV:ID, idEP:ID)=
 		new chUser:channel;
 		new m:bitstring;
 		new open: Open;
-		in(yellowpagesPH,pkPH: pkey);
+		in(yellowpagesPH,(pkPH: pkey,chPH:channel));
 		let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 		in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
 		!(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
@@ -125,7 +126,7 @@ let createEV3(idEV:ID, idMO:ID)=
 		new chUser:channel;
 		new m:bitstring;
 		new open: Open;
-		in(yellowpagesPH,pkPH: pkey);
+		in(yellowpagesPH,(pkPH: pkey,chPH:channel));
 		let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 		in(yellowpagesMO,(=idMO,chMO:channel,pkMO:pkey));
 		!(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
@@ -137,7 +138,7 @@ let createEV_singleinstance(idEV:ID)=
 		new chUser:channel;
 		new m:bitstring;
 		new open: Open;
-		in(yellowpagesPH,pkPH: pkey);
+		in(yellowpagesPH,(pkPH: pkey,chPH:channel));
 		let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 		in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
 		(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
@@ -148,19 +149,19 @@ let createEV2_singleinstance(idEV:ID, idEP:ID)=
 		new chUser:channel;
 		new m:bitstring;
 		new open: Open;
-		in(yellowpagesPH,pkPH: pkey);
+		in(yellowpagesPH,(pkPH: pkey,chPH:channel));
 		let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 		in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
 		(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
 		honestEV2(idEP,idEV,chUser,skEV,GKeygen(gmsk,idEV),m,open,anonymcred,idMO,chMO,pkMO,createContractID(idEV)) ).
 
-let createEV3_singleinstance(idEV:ID, idEP:ID, idMO:ID)=
+let createEV3_singleinstance(idEV:ID, idMO:ID)=
 		new skEV:skey;
 		new chUser:channel;
 		new m:bitstring;
 		new open: Open;
-		in(yellowpagesPH,pkPH: pkey);
+		in(yellowpagesPH,(pkPH: pkey,chPH:channel));
 		let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 		in(yellowpagesMO,(=idMO,chMO:channel,pkMO:pkey));
 		(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
-		honestEV2(idEP,idEV,chUser,skEV,GKeygen(gmsk,idEV),m,open,anonymcred,idMO,chMO,pkMO,createContractID(idEV)) ).
+		honestEV(idEV,chUser,skEV,GKeygen(gmsk,idEV),m,open,anonymcred,idMO,chMO,pkMO,createContractID(idEV)) ).

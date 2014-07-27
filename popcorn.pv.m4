@@ -3,18 +3,20 @@
 set ignoreTypes = false.
 set simplifyProcess = true.
 set displayDerivation = false .
-set traceDisplay = long.
-set simplifyDerivation = true.
-set abbreviateDerivation = true.
-set reconstructTrace = true.
-
+set traceDisplay = short.
+dnl set simplifyDerivation = true.
+dnl set abbreviateDerivation = true.
+dnl set reconstructTrace = true.
 set movenew = true.
 
 event exit.
+event exit_EV.
 event exit_PH.
 event exit_DR.
 event exit_CS.
+event exit_CS2.
 event exit_EP.
+event exit_MO.
 event exit_MO1.
 event exit_MO2.
 event exit_MO3.
@@ -44,34 +46,47 @@ let publishSensitiveInfomation()=
 	!(in(yellowpagesCS,x:bitstring);
 	out(publicChannel,x)) |
 	!(in(yellowpagesPH,x:bitstring);
+	out(publicChannel,x)) |
+	!(in(yellowpagesDR,x:bitstring);
 	out(publicChannel,x)).
 
 let createHonestActors()=
-	new idCS: ID;
-	new idEP: ID;
-	new idMO: ID;
 	new skPH: skey;
 	new skDR: skey;
-	(!out(gpk,GPk(gmsk)) |
-	 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
-	 !PH(skPH) | !out(yellowpagesPH,Pk(skPH)) |
-	 createCS(idCS) | createEP(idEP) ).
+	new chPH: channel;
+	new chDR: channel;
+	(
+		!out(gpk,GPk(gmsk)) |
+		!DR(skDR,chDR) | !out(yellowpagesDR, (Pk(skDR),chDR)) |
+		!PH(skPH,chPH) | !out(yellowpagesPH, (Pk(skPH),chPH) )
+	).
 
 
 ifdef(`CORRESPONDANCE',
-free idEV: ID [private].
-dnl query event(exit).
-dnl query event(exit_MO3).
+dnl query event(exit_EV).
+query event(exit_EP).
+dnl query event(exit_MO).
 dnl query event(exit_CS).
 dnl query event(exit_PH).
-query event(exit_DR).
+dnl query event(exit_DR).
+dnl query event(exit_EV).
+dnl query event(exit_EP).
+dnl query event(exit_CS2).
+free idCS: ID [private].
+free idEV: ID [private].
+free idMO: ID [private].
+free idEP: ID [private].
+dnl query attacker(idEV).
 
 process
 	(
-		createEV(idEV) |
 		createHonestActors() |
-		publishSensitiveInfomation() | (new idMO: ID; createMO(idMO)) |
-		!dishonestEV() | !dishonestCS() | !dishonestMO()
+		dnl publishSensitiveInfomation() |
+		createEV(idEV) |
+		createMO(idMO) |
+		createCS(idCS) |
+		createEP(idEP)
+		(*!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()*)
 	)
 )
 
@@ -79,13 +94,15 @@ ifdef(`SECRECY1',
 
 (* queries *)
 free idEV: ID [private].
+free idMO: ID [private].
 query attacker(idEV).
 
 dnl (new idEP: ID; createMO(idEP)) |
 
 process
 	(
-		createEV(idEV) | createHonestActors() | publishSensitiveInfomation() |
+		createEV3(idEV,idMO) | createHonestActors() | publishSensitiveInfomation() |
+		createMO(idMO) |
 		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO() 
 	)
 )
@@ -104,20 +121,22 @@ process
 )
 
 ifdef(`ANONYMITY',
-dnl Question: is SECRECY <-> ANONYMITY ??
+free idEV: ID [private].
+free idMO: ID [private].
 
-free privateChannel: channel [private].
-free idEV0: ID [private].
-
-process
+equivalence
 	(
-		(new idEV:ID; createEV(choice[idEV,idEV0]) ) |
-		!(new idEV:ID; createEV(idEV) ) |
-		(new skPH: skey;new skDR: skey;
-			(!out(gpk,GPk(gmsk)) |
-			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
-			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		createEV3(idEV,idMO) | !(new idEV:ID; createEV(idEV) ) |
+		createHonestActors() |
 		publishSensitiveInfomation() |
+		createMO(idMO) |
+		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+	)
+	(
+		(new idEV:ID; createEV(idEV)) | !(new idEV:ID; createEV(idEV) ) |
+		createHonestActors() |
+		publishSensitiveInfomation() |
+		createMO(idMO) |
 		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
@@ -125,16 +144,18 @@ process
 ifdef(`STRONG_SECRECY1',
 (* false model *)
 free idEV: ID [private].
-free idEV0: ID [private].
+noninterf idEV.
+free idMO: ID [private].
 
 process
 	(
-		createEV(choice[idEV,idEV0]) | !(new idEV:ID; createEV(idEV) ) |
+		createEV3(idEV,idMO) | !(new idEV:ID; createEV(idEV)) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
 		publishSensitiveInfomation() |
+		createMO(idMO) |
 		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
@@ -142,18 +163,9 @@ process
 ifdef(`STRONG_SECRECY2',
 (* false model *)
 free idEP: ID [private].
+noninterf idEP.
 
-equivalence
-	(
-		createEP(idEP) |
-		(new idEV:ID; createEV(idEV)) |
-		(new skPH: skey;new skDR: skey;
-			(!out(gpk,GPk(gmsk)) |
-			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
-			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
-		publishSensitiveInfomation() |
-		!dishonestCS() | !dishonestEP() | !dishonestMO()
-	)
+process
 	(
 		createEP(idEP) |
 		(new idEV:ID; createEV2(idEV,idEP)) |
@@ -162,7 +174,7 @@ equivalence
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
 		publishSensitiveInfomation() |
-		!dishonestCS() | !dishonestEP() | !dishonestMO()
+		!dishonestEV() | !(new idCS:ID; createCS(idCS)) | !dishonestEP() | !dishonestMO()
 	)
 )
 
@@ -172,13 +184,11 @@ free idMO: ID [private].
 
 process
 	(
-		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV3(idEV,idMO)) | !(new idEV:ID; createEV(idEV) ) |
-		(new skPH: skey;new skDR: skey;
-			(!out(gpk,GPk(gmsk)) |
-			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
-			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
-		publishSensitiveInfomation() | createMO(idMO) |
-		!dishonestCS() | !dishonestEP() | !dishonestMO()
+		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV3(idEV,idMO)) |
+		createHonestActors() |
+		publishSensitiveInfomation() |
+		createMO(idMO) |
+		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
 
