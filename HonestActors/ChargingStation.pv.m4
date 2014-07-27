@@ -13,6 +13,8 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID, pkCS:pkey, chEP:channel,
 		in(yellowpagesPH,pkPH:pkey);
 		if VerifyProof(pkPH,com,credEV_anonymousProof) then
 		(
+			in(privateCh,trid:transactID);
+			let createTransactionID(=idEP,k) =trid in
 			(* the credentials are valid*)
 			(* start the charging session *)
 			new meterReading: bitstring;
@@ -24,7 +26,6 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID, pkCS:pkey, chEP:channel,
 			if CheckSign(signedMeterReading,gpk_) then
 			if meterReading = RecoverData(signedMeterReading) then(
 				(* Send Partial SDR with encrypted EP *)
-				new trid: transactID;
 				new payment: bitstring;
 				new r: nonce;
 				let sdr=createSDR(trid, aenc_rand(ID_to_bitstring(idEP),r,pkPH), payment) in

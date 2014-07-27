@@ -1,12 +1,14 @@
 dnl symetric asymetric encryption
 (* Identifiers *)
+type nonce.
 type ID. (* Actor's Identifier *)
 fun ID_to_bitstring(ID): bitstring [data, typeConverter].
 const dummy: ID [private].
 (* sdr *)
 type SDR.
 type transactID.
-fun createReceipt(transactID): bitstring [private].
+fun createTransactionID(ID,nonce): transactID [data].
+fun createReceipt(transactID): bitstring [data].
 fun createSDR(transactID, bitstring, bitstring): SDR [data].
 
 

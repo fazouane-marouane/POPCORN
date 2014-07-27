@@ -2,7 +2,6 @@
 dnl  hash(bitstring): bitstring. dnl [data]
 
 (* Symmetric key encryption *)
-type nonce.
 type key.
 
 fun senc(bitstring, key): bitstring.

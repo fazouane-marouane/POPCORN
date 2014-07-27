@@ -6,14 +6,20 @@
 let authClient_unilateral(server:channel, pkServer:pkey, callback:channel) =
 	new k:bitstring;
 	new privateCh:channel;
-	out(server, (privateCh,k));
+	new skClient: skey;
+	out(server, aenc(Sign((privateCh,k,Pk(skClient)),skClient),pkServer));
 	in(privateCh,m:bitstring);
-	if CheckSign(m,pkServer) then out(callback,privateCh). (*else authentication failed*)
+	if CheckSign(m,pkServer) then
+	if k= adec(RecoverData(m),skClient) then
+	out(callback,privateCh). (*else authentication failed*)
 
 (* I.2. Server side authentication*)
 let authServer_unilateral(server:channel, skServer:skey, callback:channel) =
-	in(server, (privateCh:channel, k:bitstring));
-	out(privateCh, Sign(k,skServer));
+	in(server, m:bitstring);
+	let signed=adec(m,skServer) in
+	let (privateCh:channel, k:bitstring,pkClient: pkey) = RecoverData(signed) in
+	if CheckSign(signed,pkClient) then
+	out(privateCh, Sign(aenc(k,pkClient),skServer));
 	out(callback, privateCh).
 
 

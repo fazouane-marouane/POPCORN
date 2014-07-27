@@ -3,7 +3,11 @@
 set ignoreTypes = false.
 set simplifyProcess = true.
 set displayDerivation = false .
-set traceDisplay = short.
+set traceDisplay = long.
+set simplifyDerivation = true.
+set abbreviateDerivation = true.
+set reconstructTrace = true.
+
 set movenew = true.
 
 event exit.
@@ -64,7 +68,7 @@ query event(exit_DR).
 
 process
 	(
-		createEV(idEV,dummy,dummy) |
+		createEV(idEV) |
 		createHonestActors() |
 		publishSensitiveInfomation() | (new idMO: ID; createMO(idMO)) |
 		!dishonestEV() | !dishonestCS() | !dishonestMO()
@@ -81,7 +85,7 @@ dnl (new idEP: ID; createMO(idEP)) |
 
 process
 	(
-		createEV(idEV,dummy,dummy) | createHonestActors() | publishSensitiveInfomation() |
+		createEV(idEV) | createHonestActors() | publishSensitiveInfomation() |
 		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO() 
 	)
 )
@@ -94,7 +98,7 @@ query attacker(idEP).
 
 process
 	(
-		(new idEV:ID; createEV(idEV,idEP,dummy)) | createHonestActors() | publishSensitiveInfomation() |
+		(new idEV:ID; createEV2(idEV,idEP)) | createHonestActors() | publishSensitiveInfomation() |
 		!dishonestEV() | !dishonestCS() | !dishonestMO() 
 	)
 )
@@ -103,11 +107,12 @@ ifdef(`ANONYMITY',
 dnl Question: is SECRECY <-> ANONYMITY ??
 
 free privateChannel: channel [private].
+free idEV0: ID [private].
 
 process
 	(
-		(new idEV0:ID;out(privateChannel,idEV0)) | (new idEV:ID; in(privateChannel,idEV0:ID); createEV(choice[idEV,idEV0],dummy,dummy) ) |
-		!(new idEV:ID; createEV(idEV,dummy,dummy) ) |
+		(new idEV:ID; createEV(choice[idEV,idEV0]) ) |
+		!(new idEV:ID; createEV(idEV) ) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
@@ -124,7 +129,7 @@ free idEV0: ID [private].
 
 process
 	(
-		createEV(choice[idEV,idEV0],dummy,dummy) | !(new idEV:ID; createEV(idEV,dummy,dummy) ) |
+		createEV(choice[idEV,idEV0]) | !(new idEV:ID; createEV(idEV) ) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
@@ -137,18 +142,27 @@ process
 ifdef(`STRONG_SECRECY2',
 (* false model *)
 free idEP: ID [private].
-free idEP0: ID [private].
 
-process
+equivalence
 	(
 		createEP(idEP) |
-		(new idEV:ID; createEV(idEV,choice[idEP,dummy],dummy)) |
+		(new idEV:ID; createEV(idEV)) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
 		publishSensitiveInfomation() |
-		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+		!dishonestCS() | !dishonestEP() | !dishonestMO()
+	)
+	(
+		createEP(idEP) |
+		(new idEV:ID; createEV2(idEV,idEP)) |
+		(new skPH: skey;new skDR: skey;
+			(!out(gpk,GPk(gmsk)) |
+			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
+			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		publishSensitiveInfomation() |
+		!dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
 
@@ -158,21 +172,30 @@ free idMO: ID [private].
 
 process
 	(
-		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV(idEV,dummy,idMO)) | !(new idEV:ID; createEV(idEV,dummy,dummy) ) |
+		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV3(idEV,idMO)) | !(new idEV:ID; createEV(idEV) ) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
 		publishSensitiveInfomation() | createMO(idMO) |
-		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+		!dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
 
 ifdef(`UNLINKABILITY1',
 
-process
+equivalence
 	(
-		!(new idEV:ID; if choice[false,true] then createEV(idEV,dummy,dummy) else createEV_singleinstance(idEV,dummy,dummy) ) |
+		(new idEV:ID; createEV(idEV)) |
+		(new skPH: skey;new skDR: skey;
+			(!out(gpk,GPk(gmsk)) |
+			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
+			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		publishSensitiveInfomation() |
+		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+	)
+	(
+		(new idEV:ID; createEV_singleinstance(idEV) ) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
@@ -185,14 +208,23 @@ process
 ifdef(`UNLINKABILITY2',
 free idEP: ID [private].
 
-process
+equivalence
 	(
-		createEP(idEP) | !(new idEV:ID; createEV(idEV,choice[idEP,dummy],dummy) ) |
+		createEP(idEP) | !(new idEV:ID; createEV2(idEV,idEP) ) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
 		publishSensitiveInfomation() |
-		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+		!dishonestCS() | !dishonestEP() | !dishonestMO()
+	)
+	(
+		createEP(idEP) | !(new idEV:ID; createEV(idEV) ) |
+		(new skPH: skey;new skDR: skey;
+			(!out(gpk,GPk(gmsk)) |
+			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
+			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		publishSensitiveInfomation() |
+		!dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
