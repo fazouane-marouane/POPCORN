@@ -75,7 +75,6 @@ free idCS: ID [private].
 free idEV: ID [private].
 free idMO: ID [private].
 free idEP: ID [private].
-dnl query attacker(idEV).
 
 process
 	(
@@ -100,7 +99,7 @@ process
 	(
 		createEV3(idEV,idMO) | createHonestActors() | publishSensitiveInfomation() |
 		createMO(idMO) |
-		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO() 
+		!dishonestCS() | !dishonestEP() | !dishonestMO() 
 	)
 )
 
@@ -113,7 +112,7 @@ query attacker(idEP).
 process
 	(
 		(new idEV:ID; createEV2(idEV,idEP)) | createHonestActors() | publishSensitiveInfomation() |
-		!dishonestEV() | !dishonestCS() | !dishonestMO() | !dishonestEP() 
+		!dishonestCS() | !dishonestMO() | !dishonestEP() 
 	)
 )
 
@@ -127,14 +126,14 @@ equivalence
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
-		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+		!dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 	(
 		(new idEV:ID; createEV(idEV)) | !(new idEV:ID; createEV(idEV) ) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
-		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+		!dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
 
@@ -145,11 +144,11 @@ free idMO: ID [private].
 
 process
 	(
-		createEV3(idEV,idMO) | !(new idEV:ID; createEV(idEV)) |
+		createEV3(idEV,idMO) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
-		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+		!dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
 
@@ -163,7 +162,7 @@ process
 		(new idEV:ID; createEV2(idEV,idEP)) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
-		!dishonestEV() | !(new idCS:ID; createCS(idCS)) | !dishonestEP() | !dishonestMO()
+		!(new idCS:ID; createCS(idCS)) | !dishonestEP() | !dishonestMO()
 	)
 )
 
@@ -177,7 +176,7 @@ process
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
-		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+		!dishonestCS() | !dishonestEP()
 	)
 )
 
@@ -185,16 +184,16 @@ ifdef(`UNLINKABILITY1',
 
 equivalence
 	(
-		(new idEV:ID; createEV(idEV)) |
+		!(new idEV:ID; createEV(idEV)) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
-		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+		!dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 	(
 		(new idEV:ID; createEV_singleinstance(idEV) ) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
-		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
+		!dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )
 

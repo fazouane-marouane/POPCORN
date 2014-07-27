@@ -5,7 +5,6 @@ free PaidSessions: channel [private].
 let honestEP(idEP: ID,skEP:skey, chEP:channel)=
 	(* Get the anonymous Commit +SDR *)
 	in(chEP,(idCS:ID, sdr:SDR, commits:bitstring));
-	out(publicChannel, idCS);
 	let createSDR(transactionNumber,enc_idEP, payment) = sdr in
 	(
 		(* wait for the payment *)

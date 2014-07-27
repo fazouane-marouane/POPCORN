@@ -40,7 +40,6 @@ let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, m:bitstring, open:Ope
 		authClient_unilateral(chMO,pkMO,privateCh)
 		(
 			out(privateCh,(sdr,contract));
-			out(publicChannel, idEV);
 			event sendSDRToMO(idEV,idCS,idMO);
 			event exit_EV
 		)

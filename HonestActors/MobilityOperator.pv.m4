@@ -8,7 +8,6 @@ let honestMO(idMO:ID, skMO:skey, chMO:channel) =
 		authServer_unilateral(chMO,skMO,privateCh);
 		(* Get complete SDR + Contract ID *)
 		in(privateCh,(sdr:SDR,contract:ContractID));
-		out(publicChannel,contract);
 		(* Send Payment+Enc(EP)+transaction number to PH *)
 		in(yellowpagesPH,(pkPH: pkey,chPH:channel));
 		authClient_unilateral(chPH,pkPH,privateCh)
