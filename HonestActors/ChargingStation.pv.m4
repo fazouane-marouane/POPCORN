@@ -26,7 +26,8 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID, pkCS:pkey, chEP:channel,
 				(* Send Partial SDR with encrypted EP *)
 				new trid: transactID;
 				new payment: bitstring;
-				let sdr=createSDR(trid, aenc(ID_to_bitstring(idEP),pkPH), payment) in
+				new r: nonce;
+				let sdr=createSDR(trid, aenc_rand(ID_to_bitstring(idEP),r,pkPH), payment) in
 				out(privateCh,sdr);
 				(* Send anonymously Commits+SDR to the EP *)
 				out(chEP,(sdr,signedMeterReading)); (* Il faut utiliser ici un mecanisme d'authentification/signature *)

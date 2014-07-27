@@ -58,7 +58,9 @@ ifdef(`CORRESPONDANCE',
 free idEV: ID [private].
 dnl query event(exit).
 dnl query event(exit_MO3).
-query event(exit_CS).
+dnl query event(exit_CS).
+dnl query event(exit_PH).
+query event(exit_DR).
 
 process
 	(
@@ -105,7 +107,7 @@ free privateChannel: channel [private].
 process
 	(
 		(new idEV0:ID;out(privateChannel,idEV0)) | (new idEV:ID; in(privateChannel,idEV0:ID); createEV(choice[idEV,idEV0],dummy,dummy) ) |
-		!(new idEV:ID; createEV(idEV) ) |
+		!(new idEV:ID; createEV(idEV,dummy,dummy) ) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
@@ -116,7 +118,7 @@ process
 )
 
 ifdef(`STRONG_SECRECY1',
-
+(* false model *)
 free idEV: ID [private].
 free idEV0: ID [private].
 
@@ -133,14 +135,14 @@ process
 )
 
 ifdef(`STRONG_SECRECY2',
-
+(* false model *)
 free idEP: ID [private].
 free idEP0: ID [private].
 
 process
 	(
 		createEP(idEP) |
-		(new idEV:ID; createEV(idEV,choice[idEP,idEP0],dummy)) | !(new idEV:ID; createEV(idEV,dummy,dummy) ) |
+		(new idEV:ID; createEV(idEV,choice[idEP,dummy],dummy)) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
@@ -152,15 +154,16 @@ process
 
 ifdef(`OFFLINE_GUESSING',
 free idEV: ID [private].
+free idMO: ID [private].
 
 process
 	(
-		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV(idEV,dummy,dummy)) | !(new idEV:ID; createEV(idEV,dummy,dummy) ) |
+		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV(idEV,dummy,idMO)) | !(new idEV:ID; createEV(idEV,dummy,dummy) ) |
 		(new skPH: skey;new skDR: skey;
 			(!out(gpk,GPk(gmsk)) |
 			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
 			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
-		publishSensitiveInfomation() |
+		publishSensitiveInfomation() | createMO(idMO) |
 		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 )

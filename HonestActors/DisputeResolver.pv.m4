@@ -11,9 +11,10 @@ let DR(skDR: skey) =
 	(
 		in(callback,privateCh_EP:channel);
 		(* Get dispute: Commits+SDR *)
-		in(privateCh_EP, (sdr:bitstring,commits:bitstring));
+		in(privateCh_EP, (sdr:SDR,commits:bitstring));
 		(* Uncover the EV-ID(Commits) *)
 		let idEV = guncover(commits,gmsk) in
+		event exit_DR;
 		in(yellowpagesEV,(=idEV,chEV:channel,idMO:ID,contract:ContractID,skEV:skey,gskEV:skey,credEV:bitstring));
 		in(yellowpagesMO,(=idMO,chMO:channel,pkMO:pkey));
 		(* Verify Dispute(Send SDR to MO) *)

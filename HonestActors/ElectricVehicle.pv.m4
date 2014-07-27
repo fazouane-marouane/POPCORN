@@ -48,13 +48,13 @@ let honestEV(idEP:ID, idEV:ID, chEV:channel, skEV:skey, gskEV:skey, m:bitstring,
 			out(privateCh,Sign(meterReading,gskEV));
 			event sendSignedCommits(idEV,idCS);
 			(* Get Partial SDR with encrypted EP *)
-			in(privateCh,sdr:bitstring);
+			in(privateCh,sdr:SDR);
 			event getSDR(idEV,idCS);
 			(* Submit the SDR+ Contract ID to MO *)
 			out(callback2,(sdr,contract))
 		) |
 		(
-			in(callback2,(sdr:bitstring,contract:ContractID));
+			in(callback2,(sdr:SDR,contract:ContractID));
 			new callback:channel;
 			authClient_unilateral(chMO,pkMO,callback) |
 			(
@@ -89,8 +89,8 @@ let createEV(idEV:ID, idEP:ID, idMO:ID)=
 		in(yellowpagesPH,pkPH: pkey);
 		let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 		in(yellowpagesMO,(=idMO,chMO:channel,pkMO:pkey));
-		!(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),anonymcred)) |
-		honestEV(idEP,idEV,chUser,skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),m,open,anonymcred,idMO,chMO,pkMO,createContractID(idEV)) )
+		!(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
+		honestEV(idEP,idEV,chUser,skEV,GKeygen(gmsk,idEV),m,open,anonymcred,idMO,chMO,pkMO,createContractID(idEV)) )
 	).
 
 (* creates and registers n vehicles/users*) 
@@ -116,7 +116,7 @@ let createEV_singleinstance(idEV:ID, idEP:ID, idMO:ID)=
 		in(yellowpagesPH,pkPH: pkey);
 		let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
 		in(yellowpagesMO,(=idMO,chMO:channel,pkMO:pkey));
-		(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),anonymcred)) |
-		honestEV(idEP,idEV,chUser,skEV,GKeygen(gmsk,ID_to_bitstring(idEV)),m,open,anonymcred,idMO,chMO,pkMO,createContractID(idEV)) )
+		(!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
+		honestEV(idEP,idEV,chUser,skEV,GKeygen(gmsk,idEV),m,open,anonymcred,idMO,chMO,pkMO,createContractID(idEV)) )
 	).
 

@@ -10,7 +10,7 @@ let honestMO(idMO:ID, skMO:skey, chMO:channel, pkMO:pkey) =
 		(
 			in(callback,privateCh:channel);
 			(* Get complete SDR + Contract ID *)
-			in(privateCh,(sdr:bitstring,contract:ContractID));
+			in(privateCh,(sdr:SDR,contract:ContractID));
 			(* Send Payment+Enc(EP)+transaction number to PH *)
 			new callback:channel;
 			authClient_unilateral(chMO,pkMO,callback) |
@@ -33,7 +33,7 @@ let honestMO(idMO:ID, skMO:skey, chMO:channel, pkMO:pkey) =
 		(
 			in(callback,privateCh:channel);
 			(* Get a dispute verification request with SDR *)
-			in(privateCh,sdr:bitstring); (* il faut utiliser un mecanisme de signature/authentification *)
+			in(privateCh,sdr:SDR); (* il faut utiliser un mecanisme de signature/authentification *)
 			let createSDR(transactionNumber,enc_idEP, payment) = sdr in
 			new callback: channel;
 			(
