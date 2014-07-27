@@ -61,10 +61,9 @@ let createHonestActors()=
 		!PH(skPH,chPH) | !out(yellowpagesPH, (Pk(skPH),chPH) )
 	).
 
-
 ifdef(`CORRESPONDANCE',
 dnl query event(exit_EV).
-query event(exit_EP).
+query event(exit_CS2).
 dnl query event(exit_MO).
 dnl query event(exit_CS).
 dnl query event(exit_PH).
@@ -97,8 +96,6 @@ free idEV: ID [private].
 free idMO: ID [private].
 query attacker(idEV).
 
-dnl (new idEP: ID; createMO(idEP)) |
-
 process
 	(
 		createEV3(idEV,idMO) | createHonestActors() | publishSensitiveInfomation() |
@@ -116,7 +113,7 @@ query attacker(idEP).
 process
 	(
 		(new idEV:ID; createEV2(idEV,idEP)) | createHonestActors() | publishSensitiveInfomation() |
-		!dishonestEV() | !dishonestCS() | !dishonestMO() 
+		!dishonestEV() | !dishonestCS() | !dishonestMO() | !dishonestEP() 
 	)
 )
 
@@ -142,7 +139,6 @@ equivalence
 )
 
 ifdef(`STRONG_SECRECY1',
-(* false model *)
 free idEV: ID [private].
 noninterf idEV.
 free idMO: ID [private].
@@ -150,10 +146,7 @@ free idMO: ID [private].
 process
 	(
 		createEV3(idEV,idMO) | !(new idEV:ID; createEV(idEV)) |
-		(new skPH: skey;new skDR: skey;
-			(!out(gpk,GPk(gmsk)) |
-			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
-			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
 		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
@@ -161,7 +154,6 @@ process
 )
 
 ifdef(`STRONG_SECRECY2',
-(* false model *)
 free idEP: ID [private].
 noninterf idEP.
 
@@ -169,10 +161,7 @@ process
 	(
 		createEP(idEP) |
 		(new idEV:ID; createEV2(idEV,idEP)) |
-		(new skPH: skey;new skDR: skey;
-			(!out(gpk,GPk(gmsk)) |
-			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
-			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		createHonestActors() |
 		publishSensitiveInfomation() |
 		!dishonestEV() | !(new idCS:ID; createCS(idCS)) | !dishonestEP() | !dishonestMO()
 	)
@@ -197,19 +186,13 @@ ifdef(`UNLINKABILITY1',
 equivalence
 	(
 		(new idEV:ID; createEV(idEV)) |
-		(new skPH: skey;new skDR: skey;
-			(!out(gpk,GPk(gmsk)) |
-			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
-			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		createHonestActors() |
 		publishSensitiveInfomation() |
 		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 	(
 		(new idEV:ID; createEV_singleinstance(idEV) ) |
-		(new skPH: skey;new skDR: skey;
-			(!out(gpk,GPk(gmsk)) |
-			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
-			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		createHonestActors() |
 		publishSensitiveInfomation() |
 		!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
@@ -221,19 +204,13 @@ free idEP: ID [private].
 equivalence
 	(
 		createEP(idEP) | !(new idEV:ID; createEV2(idEV,idEP) ) |
-		(new skPH: skey;new skDR: skey;
-			(!out(gpk,GPk(gmsk)) |
-			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
-			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		createHonestActors() |
 		publishSensitiveInfomation() |
 		!dishonestCS() | !dishonestEP() | !dishonestMO()
 	)
 	(
 		createEP(idEP) | !(new idEV:ID; createEV(idEV) ) |
-		(new skPH: skey;new skDR: skey;
-			(!out(gpk,GPk(gmsk)) |
-			 !DR(skDR) | !out(yellowpagesDR, Pk(skDR)) |
-			 !PH(skPH) | !out(yellowpagesPH,Pk(skPH))) ) |
+		createHonestActors() |
 		publishSensitiveInfomation() |
 		!dishonestCS() | !dishonestEP() | !dishonestMO()
 	)

@@ -2,7 +2,7 @@
 
 free PaidSessions: channel [private].
 
-let honestEP(idEP: ID,skEP:skey, chEP:channel, pkEP:pkey)=
+let honestEP(idEP: ID,skEP:skey, chEP:channel)=
 	(* Get the anonymous Commit +SDR *)
 	in(chEP,(idCS:ID, sdr:SDR, commits:bitstring));
 	out(publicChannel, idCS);
@@ -14,7 +14,7 @@ let honestEP(idEP: ID,skEP:skey, chEP:channel, pkEP:pkey)=
 		!out(PaidSessions,transactionNumber)
 	) |
 	(
-		(* waits 10 time units before reporting a dispute to DR *)
+		(* reporting a dispute to DR *)
 		new callback: channel;
 		(
 			in(PaidSessions,=transactionNumber);
@@ -24,11 +24,9 @@ let honestEP(idEP: ID,skEP:skey, chEP:channel, pkEP:pkey)=
 			in(callback,branch:bool);
 			if branch then
 			(
-				new callback: channel;
 				in(yellowpagesDR,(pkDR:pkey,chDR:channel));
-				authClient_unilateral(chDR,pkDR,callback) |
+				authClient_unilateral(chDR,pkDR,privateCh)
 				(
-					in(callback,privateCh:channel);
 					out(privateCh, (sdr,commits)); (* report to DR *)
 					event exit_EP
 				)
@@ -40,11 +38,15 @@ let honestEP(idEP: ID,skEP:skey, chEP:channel, pkEP:pkey)=
 let createEP(idEP: ID)=
 	new chEP: channel;
 	new skEP: skey;
-	(!out(yellowpagesEP,(idEP,chEP,Pk(skEP)))|
-	!honestEP(idEP,skEP,chEP,Pk(skEP)) ).
+	(
+		!out(yellowpagesEP,(idEP,chEP,Pk(skEP))) |
+		!honestEP(idEP,skEP,chEP)
+	).
 
 let createEP_singleinstance(idEP: ID)=
 	new chEP: channel;
 	new skEP: skey;
-	(!out(yellowpagesEP,(idEP,chEP,Pk(skEP)))|
-	honestEP(idEP,skEP,chEP,Pk(skEP)) ).
+	(
+		!out(yellowpagesEP,(idEP,chEP,Pk(skEP))) |
+		honestEP(idEP,skEP,chEP)
+	).

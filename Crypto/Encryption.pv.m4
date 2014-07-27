@@ -1,6 +1,3 @@
-(* hash *)
-dnl  hash(bitstring): bitstring. dnl [data]
-
 (* Symmetric key encryption *)
 type key.
 

@@ -3,25 +3,22 @@
 (* I. Unilateral authetication*)
 
 (* I.1. Client side authentication *)
-let authClient_unilateral(server:channel, pkServer:pkey, callback:channel) =
-	new k:bitstring;
-	new privateCh:channel;
-	new skClient: skey;
-	out(server, aenc(Sign((privateCh,k,Pk(skClient)),skClient),pkServer));
-	in(privateCh,m:bitstring);
-	if CheckSign(m,pkServer) then
-	if k= adec(RecoverData(m),skClient) then
-	out(callback,privateCh). (*else authentication failed*)
+define(`authClient_unilateral',
+	`new authClient_unilateral_k:bitstring;
+	new $3:channel;
+	new authClient_unilateral_skClient: skey;
+	out($1, aenc(Sign(($3,authClient_unilateral_k,Pk(authClient_unilateral_skClient)),authClient_unilateral_skClient),$2));
+	in($3,authClient_unilateral_m:bitstring);
+	if CheckSign(authClient_unilateral_m,$2) then
+	if authClient_unilateral_k= adec(RecoverData(authClient_unilateral_m),authClient_unilateral_skClient) then')
 
 (* I.2. Server side authentication*)
-let authServer_unilateral(server:channel, skServer:skey, callback:channel) =
-	in(server, m:bitstring);
-	let signed=adec(m,skServer) in
-	let (privateCh:channel, k:bitstring,pkClient: pkey) = RecoverData(signed) in
-	if CheckSign(signed,pkClient) then
-	out(privateCh, Sign(aenc(k,pkClient),skServer));
-	out(callback, privateCh).
-
+define(`authServer_unilateral',
+	`in($1, authClient_unilateral_m:bitstring);
+	let authClient_unilateral_signed=adec(authClient_unilateral_m,$2) in
+	let ($3:channel, authClient_unilateral_k:bitstring,authClient_unilateral_pkClient: pkey) = RecoverData(authClient_unilateral_signed) in
+	if CheckSign(authClient_unilateral_signed,authClient_unilateral_pkClient) then
+	out($3, Sign(aenc(authClient_unilateral_k,authClient_unilateral_pkClient),$2))')
 
 (* II. Bilateral authentication*)
 
