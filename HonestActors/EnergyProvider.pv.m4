@@ -38,9 +38,9 @@ let honestEP(idEP: ID,skEP:skey, chEP:channel)=
 let createEP(idEP: ID)=
 	new chEP: channel;
 	new skEP: skey;
-	(
+	!(
 		!out(yellowpagesEP,(idEP,chEP,Pk(skEP))) |
-		!honestEP(idEP,skEP,chEP)
+		honestEP(idEP,skEP,chEP)
 	).
 
 let createEP_singleinstance(idEP: ID)=

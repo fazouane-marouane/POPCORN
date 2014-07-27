@@ -4,7 +4,7 @@ free receiptTable: channel [private].
 
 let honestMO(idMO:ID, skMO:skey, chMO:channel) =
 	(* UseCase1 *)
-	!(
+	(
 		authServer_unilateral(chMO,skMO,privateCh);
 		(* Get complete SDR + Contract ID *)
 		in(privateCh,(sdr:SDR,contract:ContractID));
@@ -16,20 +16,19 @@ let honestMO(idMO:ID, skMO:skey, chMO:channel) =
 			out(privateCh,sdr);
 			(* Get Payment receipt for transaction number *)
 			in(privateCh,receipt:bitstring);
-			event exit_MO;
 			(* Bill the user *)
 			let createSDR(transactionNumber,enc_idEP, payment) = sdr in
 			event exit_MO1;
-			!out(receiptTable,(transactionNumber,receipt))
+			!(out(receiptTable,(transactionNumber,receipt)))
 		)
 	) |
 	(* UseCase2 *)
-	!(
+	(
 		authServer_unilateral(chMO,skMO,privateCh);
 		(* Get a dispute verification request with SDR *)
 		in(privateCh,sdr:SDR); (* il faut utiliser un mecanisme de signature/authentification *)
 		let createSDR(transactionNumber,enc_idEP, payment) = sdr in
-		event exit_MO3;
+		event exit_MO;
 		new callback: channel;
 		(
 			in(receiptTable,(=transactionNumber,receipt:bitstring));
@@ -49,7 +48,15 @@ let honestMO(idMO:ID, skMO:skey, chMO:channel) =
 let createMO(idMO: ID)=
 	new chMO: channel;
 	new skMO: skey;
-	(
+	!(
+		!out(yellowpagesMO,(idMO,chMO,Pk(skMO))) |
+		honestMO(idMO,skMO,chMO)
+	).
+
+let createMO_singleinstance(idMO: ID)=
+	new chMO: channel;
+	new skMO: skey;
+	!(
 		!out(yellowpagesMO,(idMO,chMO,Pk(skMO))) |
 		honestMO(idMO,skMO,chMO)
 	).

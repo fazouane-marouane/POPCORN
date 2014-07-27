@@ -30,9 +30,8 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID) =
 			out(privateCh,sdr);
 			in(yellowpagesEP,(=idEP,chEP:channel,pkEP:pkey));
 			(* Send anonymously Commits+SDR to the EP *)
-			event exit_CS;
 			out(chEP,(idCS,sdr,signedMeterReading)); (* Il faut utiliser ici un mecanisme d'authentification/signature *)
-			event exit_CS2
+			event exit_CS
 		)
 	).
 
@@ -40,9 +39,9 @@ let createCS(idCS: ID)=
 	new chCS: channel;
 	new skCS: skey;
 	in(yellowpagesEP,(idEP:ID,chEP:channel,pkEP:pkey));
-	(
+	!(
 		!out(yellowpagesCS,(idCS,chCS,idEP,Pk(skCS))) |
-		!honestCS(idCS,skCS,chCS,idEP)
+		honestCS(idCS,skCS,chCS,idEP)
 	).
 
 let createCS_singleinstance(idCS: ID)=

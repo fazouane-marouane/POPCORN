@@ -63,14 +63,14 @@ let createHonestActors()=
 
 ifdef(`CORRESPONDANCE',
 dnl query event(exit_EV).
-query event(exit_CS2).
-dnl query event(exit_MO).
+dnl query event(exit_CS).
+query event(exit_EP).
+dnl query event(exit_MO1).
 dnl query event(exit_CS).
 dnl query event(exit_PH).
 dnl query event(exit_DR).
 dnl query event(exit_EV).
-dnl query event(exit_EP).
-dnl query event(exit_CS2).
+dnl query event(exit_PH).
 free idCS: ID [private].
 free idEV: ID [private].
 free idMO: ID [private].
