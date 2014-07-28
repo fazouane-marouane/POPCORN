@@ -4,12 +4,13 @@ free PaidSessions: channel [private].
 
 let honestEP(idEP: ID,skEP:skey, chEP:channel)=
 	(* Get the anonymous Commit +SDR *)
-	in(chEP,(idCS:ID, sdr:SDR, commits:bitstring));
+	authServer_unilateral(chEP,skEP,privateCh);
+	in(privateCh,(idCS:ID, sdr:SDR, commits:bitstring));
 	let createSDR(transactionNumber,enc_idEP, payment) = sdr in
 	(
 		(* wait for the payment *)
-		in(chEP,(=payment,=transactionNumber)); (* TODO: we probably need a secure communication here *)
-		event exit_EP;
+		in(privateCh,(=payment,=transactionNumber)); (* TODO: we probably need a secure communication here *)
+		event exit_EP1;
 		!out(PaidSessions,transactionNumber)
 	) |
 	(
@@ -27,7 +28,7 @@ let honestEP(idEP: ID,skEP:skey, chEP:channel)=
 				authClient_unilateral(chDR,pkDR,privateCh)
 				(
 					out(privateCh, (sdr,commits)); (* report to DR *)
-					event exit_EP
+					event exit_EP2
 				)
 			)
 		)|

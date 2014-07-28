@@ -15,7 +15,8 @@ event exit_PH.
 event exit_DR.
 event exit_CS.
 event exit_CS2.
-event exit_EP.
+event exit_EP1.
+event exit_EP2.
 event exit_MO.
 event exit_MO1.
 event exit_MO2.
@@ -37,18 +38,18 @@ include(`DishonestActors/_DishonestActors.pv.m4')
 
 (* main process *)
 
-let publishSensitiveInfomation()=
+let publishSensitiveInfomation()= (* IDs are not passed, though *)
 	(out(publicChannel,GPk(gmsk)))|
-	!(in(yellowpagesMO,x:bitstring);
-	out(publicChannel,x)) |
+	!(in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
+	out(publicChannel,(chMO,pkMO)) ) |
 	!(in(yellowpagesEP,(idEP:ID,chEP:channel,pkEP:pkey));
-	out(publicChannel,(chEP,pkEP))) |
+	out(publicChannel,(chEP,pkEP)) ) |
 	!(in(yellowpagesCS,(idCS:ID,chCS:channel,idEP:ID,pkCS:pkey));
-	out(publicChannel,(idCS,chCS,pkCS))) |
+	out(publicChannel,(idCS,chCS,pkCS)) ) |
 	!(in(yellowpagesPH,x:bitstring);
-	out(publicChannel,x)) |
+	out(publicChannel,x) ) |
 	!(in(yellowpagesDR,x:bitstring);
-	out(publicChannel,x)).
+	out(publicChannel,x) ).
 
 let createHonestActors()=
 	new skPH: skey;
@@ -76,7 +77,8 @@ ifdef(`CORRESPONDANCE',
 query event(exit_EV).
 query event(exit_MO1).
 query event(exit_CS).
-query event(exit_EP).
+query event(exit_EP1).
+query event(exit_EP2).
 query event(exit_PH).
 query event(exit_DR).
 
@@ -138,21 +140,22 @@ equivalence
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
-		dishonestCS() | dishonestEP() | dishonestMO()
+		dishonestCS() | dishonestEP()
 	)
 	(
 		(new idEV:ID; createEV(idEV)) | !(new idEV:ID; createEV(idEV) ) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
-		dishonestCS() | dishonestEP() | dishonestMO()
+		dishonestCS() | dishonestEP()
 	)
 )
 
 ifdef(`STRONG_SECRECY1',
 free idEV: ID [private].
-noninterf idEV.
 free idMO: ID [private].
+noninterf idEV.
+noninterf idMO.
 
 process
 	(
@@ -165,16 +168,21 @@ process
 )
 
 ifdef(`STRONG_SECRECY2',
-free idEP: ID [private].
-noninterf idEP.
+dnl free idEP: ID [private].
+dnl noninterf idEP.
 
 process
 	(
-		(new idEV:ID; createEV_EP(idEV,idEP)) |
-		createHonestActors() |
+		new idEP0:ID; new idEP1:ID;
+		new privateCh:channel;
+		(out(privateCh,choice[idEP0,idEP1])) |
+		(new idEV:ID; in(privateCh,idEP:ID); createEV_EP_singleinstance(idEV,idEP)) |
+		!(new idEV:ID; createEV_singleinstance(idEV)) |
+		createHonestActors_singleinstance() |
 		publishSensitiveInfomation() |
-		createEP(idEP) |
-		!(new idCS:ID; createCS(idCS)) | dishonestMO()
+		createEP_singleinstance(idEP0) |
+		createEP_singleinstance(idEP1) |
+		(new idCS:ID; createCS_singleinstance(idCS)) | (new idMO:ID; createMO_singleinstance(idMO))
 	)
 )
 

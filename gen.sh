@@ -4,7 +4,7 @@ ANALYZER='../../proverif -in pitype'
 # SECRECY1 STRONG_SECRECY1 CORRESPONDANCE OFFLINE_GUESSING
 (
 echo ">>>>" POPCORN "<<<<"
-for i in SECRECY2
+for i in STRONG_SECRECY2
 do
 mkdir -p Build
 mkdir -p Temp

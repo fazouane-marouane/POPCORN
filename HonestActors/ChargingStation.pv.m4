@@ -11,7 +11,7 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID) =
 	in(yellowpagesPH,(pkPH:pkey,chPH:channel));
 	if VerifyProof(pkPH,com,credEV_anonymousProof) then
 	(
-		let createTransactionID(=idEP,k) =trid in
+		dnl let createTransactionID(=idEP,k) =trid in
 		(* the credentials are valid*)
 		(* start the charging session *)
 		new meterReading: MeterReading;

@@ -14,3 +14,4 @@ reduc forall k: skey, v: bitstring; RecoverKey(Sign(v,k)) = Pk(k).
 
 reduc forall k: skey, v: bitstring; RecoverData(Sign(v,k)) = v.
 reduc forall m:bitstring, k:ID, gmsk: gmskey; guncover(Sign(m,GKeygen(gmsk,k)),gmsk) = k.
+reduc forall gmsk: gmskey, id:ID; secretkey_is_personal(GKeygen(gmsk,id))=id.

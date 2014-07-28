@@ -28,20 +28,11 @@ let honestMO(idMO:ID, skMO:skey, chMO:channel) =
 		in(privateCh,sdr:SDR); (* il faut utiliser un mecanisme de signature/authentification *)
 		let createSDR(transactionNumber,enc_idEP, payment) = sdr in
 		event exit_MO;
-		new callback: channel;
+		in(receiptTable,(=transactionNumber,receipt:bitstring));
 		(
-			in(receiptTable,(=transactionNumber,receipt:bitstring));
-			(
-				(out(callback,false);event exit_MO2) |
-				(out(privateCh,receipt);event exit_MO3) (* Respond with payment receipt if available *)
-
-			)
-		) |
-		(
-			in(callback,branch:bool);
-			if branch then 0 (* Contact the user?? *)
-		) |
-		( out(callback,true) )
+			(event exit_MO2 (* Contact the user?? *)) |
+			(out(privateCh,receipt);event exit_MO3) (* Respond with payment receipt if available *)
+		)
 	).
 
 let createMO(idMO: ID)=
