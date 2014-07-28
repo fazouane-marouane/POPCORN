@@ -4,8 +4,8 @@ set ignoreTypes = false.
 set simplifyProcess = true.
 set displayDerivation = false .
 set traceDisplay = short.
-dnl set simplifyDerivation = true.
-dnl set abbreviateDerivation = true.
+set simplifyDerivation = true.
+set abbreviateDerivation = true.
 dnl set reconstructTrace = true.
 set movenew = true.
 
@@ -61,16 +61,25 @@ let createHonestActors()=
 		!PH(skPH,chPH) | !out(yellowpagesPH, (Pk(skPH),chPH) )
 	).
 
+let createHonestActors_singleinstance()=
+	new skPH: skey;
+	new skDR: skey;
+	new chPH: channel;
+	new chDR: channel;
+	(
+		!out(gpk,GPk(gmsk)) |
+		DR(skDR,chDR) | !out(yellowpagesDR, (Pk(skDR),chDR)) |
+		PH(skPH,chPH) | !out(yellowpagesPH, (Pk(skPH),chPH) )
+	).
+
 ifdef(`CORRESPONDANCE',
-dnl query event(exit_EV).
-dnl query event(exit_CS).
+query event(exit_EV).
+query event(exit_MO1).
+query event(exit_CS).
 query event(exit_EP).
-dnl query event(exit_MO1).
-dnl query event(exit_CS).
-dnl query event(exit_PH).
-dnl query event(exit_DR).
-dnl query event(exit_EV).
-dnl query event(exit_PH).
+query event(exit_PH).
+query event(exit_DR).
+
 free idCS: ID [private].
 free idEV: ID [private].
 free idMO: ID [private].
@@ -172,28 +181,31 @@ free idMO: ID [private].
 
 process
 	(
-		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV3(idEV,idMO)) |
+		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV3_singleinstance(idEV,idMO)) |
+		createHonestActors_singleinstance() |
+		publishSensitiveInfomation() |
+		createMO_singleinstance(idMO) |
+		dishonestCS() | dishonestEP()
+	)
+)
+
+ifdef(`UNLINKABILITY1',
+free idMO: ID [private].
+
+equivalence
+	(
+		!(new idEV:ID; createEV3(idEV,idMO)) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
 		!dishonestCS() | !dishonestEP()
 	)
-)
-
-ifdef(`UNLINKABILITY1',
-
-equivalence
 	(
-		!(new idEV:ID; createEV(idEV)) |
+		!(new idEV:ID; createEV3_singleinstance(idEV,idMO)) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
-		!dishonestCS() | !dishonestEP() | !dishonestMO()
-	)
-	(
-		(new idEV:ID; createEV_singleinstance(idEV) ) |
-		createHonestActors() |
-		publishSensitiveInfomation() |
-		!dishonestCS() | !dishonestEP() | !dishonestMO()
+		createMO(idMO) |
+		!dishonestCS() | !dishonestEP()
 	)
 )
 
