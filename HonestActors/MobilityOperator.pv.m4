@@ -5,12 +5,12 @@ free receiptTable: channel [private].
 let honestMO(idMO:ID, skMO:skey, chMO:channel) =
 	(* UseCase1 *)
 	(
-		authServer_unilateral(chMO,skMO,privateCh);
+		authServer_unilateral(chMO,skMO,privateCh); (* with the EV *)
 		(* Get complete SDR + Contract ID *)
 		in(privateCh,(sdr:SDR,contract:ContractID));
 		(* Send Payment+Enc(EP)+transaction number to PH *)
 		in(yellowpagesPH,(pkPH: pkey,chPH:channel));
-		authClient_unilateral(chPH,pkPH,privateCh)
+		authClient_unilateral(chPH,pkPH,privateCh) (* with the PH *)
 		(
 			out(privateCh,sdr);
 			(* Get Payment receipt for transaction number *)
@@ -23,7 +23,7 @@ let honestMO(idMO:ID, skMO:skey, chMO:channel) =
 	) |
 	(* UseCase2 *)
 	(
-		authServer_unilateral(chMO,skMO,privateCh);
+		authServer_unilateral(chMO,skMO,privateCh); (* with the DR *)
 		(* Get a dispute verification request with SDR *)
 		in(privateCh,sdr:SDR); (* il faut utiliser un mecanisme de signature/authentification *)
 		let createSDR(transactionNumber,enc_idEP, payment) = sdr in

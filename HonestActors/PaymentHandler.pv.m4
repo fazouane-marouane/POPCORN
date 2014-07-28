@@ -1,7 +1,7 @@
 (* Payment Handler *)
 
 let PH(skPH: skey,chPH: channel) =
-	authServer_unilateral(chPH,skPH,privateCh);
+	authServer_unilateral(chPH,skPH,privateCh); (* with the MO *)
 	(* Get Payment, Enc(EP), transaction number *)
 	in(privateCh,sdr:SDR);
 	(*out(publicChannel,sdr);*) (* honest but curious actor *)
@@ -13,7 +13,7 @@ let PH(skPH: skey,chPH: channel) =
 	out(privateCh,createReceipt(transactionNumber));
 	in(yellowpagesEP,(=idEP,chEP:channel,pkEP:pkey));
 	(* Send payment+transaction number to EP *)
-	authClient_unilateral(chEP,pkEP,privateCh)
+	authClient_unilateral(chEP,pkEP,privateCh) (* with the EP *)
 	(
 		out(privateCh,(payment,transactionNumber)); (* I guess we should use a signature mecanism here *)
 		event exit_PH

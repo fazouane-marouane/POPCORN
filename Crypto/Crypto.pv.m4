@@ -8,7 +8,7 @@ const dummy: ID [private].
 (* sdr *)
 type SDR.
 type transactID.
-fun createTransactionID(ID,nonce): transactID [private]. (*or [data] ?? *)
+fun createTransactionID(ID,nonce): transactID [data].
 fun createReceipt(transactID): bitstring [data].
 fun createSDR(transactID, bitstring, bitstring): SDR [data].
 

@@ -4,9 +4,9 @@ set ignoreTypes = false.
 set simplifyProcess = true.
 set displayDerivation = false .
 set traceDisplay = short.
-set simplifyDerivation = true.
-set abbreviateDerivation = true.
-dnl set reconstructTrace = true.
+set simplifyDerivation = false.
+set abbreviateDerivation = false.
+set reconstructTrace = false.
 set movenew = true.
 
 event exit.
@@ -74,27 +74,29 @@ let createHonestActors_singleinstance()=
 	).
 
 ifdef(`CORRESPONDANCE',
-query event(exit_EV).
-query event(exit_MO1).
-query event(exit_CS).
-query event(exit_EP1).
-query event(exit_EP2).
-query event(exit_PH).
-query event(exit_DR).
+dnl query event(exit_EV).
+dnl query event(exit_MO1).
+dnl query event(exit_CS).
+dnl query event(exit_EP1).
+dnl query event(exit_EP2).
+dnl query event(exit_PH).
+dnl query event(exit_DR).
 
 free idCS: ID [private].
 free idEV: ID [private].
 free idMO: ID [private].
 free idEP: ID [private].
 
+query attacker(idEV).
+
 process
 	(
-		createHonestActors() |
+		createHonestActors_singleinstance() |
 		dnl publishSensitiveInfomation() |
-		createEV(idEV) |
-		createMO(idMO) |
-		createCS(idCS) |
-		createEP(idEP)
+		createEV_singleinstance(idEV) |
+		createMO_singleinstance(idMO) |
+		createCS_singleinstance(idCS) |
+		createEP_singleinstance(idEP)
 		(*!dishonestEV() | !dishonestCS() | !dishonestEP() | !dishonestMO()*)
 	)
 )

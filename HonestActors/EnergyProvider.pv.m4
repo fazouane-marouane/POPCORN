@@ -4,11 +4,12 @@ free PaidSessions: channel [private].
 
 let honestEP(idEP: ID,skEP:skey, chEP:channel)=
 	(* Get the anonymous Commit +SDR *)
-	authServer_unilateral(chEP,skEP,privateCh);
+	authServer_unilateral(chEP,skEP,privateCh); (* with the CS*)
 	in(privateCh,(idCS:ID, sdr:SDR, commits:bitstring));
 	let createSDR(transactionNumber,enc_idEP, payment) = sdr in
 	(
 		(* wait for the payment *)
+		authServer_unilateral(chEP,skEP,privateCh); (* with the PH *)
 		in(privateCh,(=payment,=transactionNumber)); (* TODO: we probably need a secure communication here *)
 		event exit_EP1;
 		!out(PaidSessions,transactionNumber)
@@ -25,7 +26,7 @@ let honestEP(idEP: ID,skEP:skey, chEP:channel)=
 			if branch then
 			(
 				in(yellowpagesDR,(pkDR:pkey,chDR:channel));
-				authClient_unilateral(chDR,pkDR,privateCh)
+				authClient_unilateral(chDR,pkDR,privateCh) (* with the DR*)
 				(
 					out(privateCh, (sdr,commits)); (* report to DR *)
 					event exit_EP2

@@ -3,7 +3,7 @@
 let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID) =
 	(* get infos *)
 	(* connect securely to an electric vehicle (EV) *)
-	authServer_unilateral(chCS,skCS,privateCh);
+	authServer_unilateral(chCS,skCS,privateCh); (* with the EV *)
 	in(privateCh,trid:transactID);
 	(*event securelyConnectedToEV(idCS,idEV);*)
 	(* verify the credentials *)
@@ -11,7 +11,7 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID) =
 	in(yellowpagesPH,(pkPH:pkey,chPH:channel));
 	if VerifyProof(pkPH,com,credEV_anonymousProof) then
 	(
-		dnl let createTransactionID(=idEP,k) =trid in
+		let createTransactionID(=idEP,k) =trid in
 		(* the credentials are valid*)
 		(* start the charging session *)
 		new meterReading: MeterReading;
@@ -30,8 +30,11 @@ let honestCS(idCS:ID, skCS:skey, chCS:channel, idEP:ID) =
 			out(privateCh,sdr);
 			in(yellowpagesEP,(=idEP,chEP:channel,pkEP:pkey));
 			(* Send anonymously Commits+SDR to the EP *)
-			out(chEP,(idCS,sdr,signedMeterReading)); (* Il faut utiliser ici un mecanisme d'authentification/signature *)
-			event exit_CS
+			authClient_unilateral(chEP,pkEP,privateCh) (* with the EP *)
+			(
+				out(privateCh,(idCS,sdr,signedMeterReading)); (* Il faut utiliser ici un mecanisme d'authentification/signature *)
+				event exit_CS
+			)
 		)
 	).
 

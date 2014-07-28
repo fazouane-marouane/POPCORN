@@ -13,6 +13,7 @@ define(`honestEV_definition',
 ``'
 let honestEV`'ifelse(`$1',`EP',`_EP')(ifelse(`$1',`EP',`idEP:ID, ')idEV:ID, chEV:channel, skEV:skey, gskEV:skey, m:bitstring, open:Open, credEV: bitstring, idMO:ID, contract:ContractID) =
 	(* get infos*)
+	out(publicChannel,idEV);
 	(* select a charging station (CS) *)
 	in(yellowpagesCS,(idCS:ID, chCS:channel, ifelse(`$1',`EP',`=idEP',`idEP:ID') , pkCS:pkey) );
 	event selectCS(idEV,idCS);
