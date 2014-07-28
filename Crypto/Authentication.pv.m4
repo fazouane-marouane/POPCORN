@@ -4,7 +4,8 @@
 
 (* I.1. Client side authentication *)
 define(`authClient_unilateral',
-	`new authClient_unilateral_k:bitstring;
+	``'dnl
+	new authClient_unilateral_k:bitstring;
 	new $3:channel;
 	new authClient_unilateral_skClient: skey;
 	out($1, aenc(Sign(($3,authClient_unilateral_k,Pk(authClient_unilateral_skClient)),authClient_unilateral_skClient),$2));
@@ -14,7 +15,8 @@ define(`authClient_unilateral',
 
 (* I.2. Server side authentication*)
 define(`authServer_unilateral',
-	`in($1, authClient_unilateral_m:bitstring);
+	``'dnl
+	in($1, authClient_unilateral_m:bitstring);
 	let authClient_unilateral_signed=adec(authClient_unilateral_m,$2) in
 	let ($3:channel, authClient_unilateral_k:bitstring,authClient_unilateral_pkClient: pkey) = RecoverData(authClient_unilateral_signed) in
 	if CheckSign(authClient_unilateral_signed,authClient_unilateral_pkClient) then

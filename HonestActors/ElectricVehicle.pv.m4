@@ -9,10 +9,12 @@ event sendSignedCommits(ID,ID).
 event getSDR(ID,ID).
 event sendSDRToMO(ID,ID,ID).
 
-let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, m:bitstring, open:Open, credEV: bitstring, idMO:ID, contract:ContractID) =
+define(`honestEV_definition',
+``'
+let honestEV`'ifelse(`$1',`EP',`_EP')(ifelse(`$1',`EP',`idEP:ID, ')idEV:ID, chEV:channel, skEV:skey, gskEV:skey, m:bitstring, open:Open, credEV: bitstring, idMO:ID, contract:ContractID) =
 	(* get infos*)
 	(* select a charging station (CS) *)
-	in(yellowpagesCS,(idCS:ID, chCS:channel, idEP:ID, pkCS:pkey) );
+	in(yellowpagesCS,(idCS:ID, chCS:channel, ifelse(`$1',`EP',`=idEP',`idEP:ID') , pkCS:pkey) );
 	event selectCS(idEV,idCS);
 	(* connect securely to the CS *)
 	authClient_unilateral(chCS,pkCS,privateCh)
@@ -44,57 +46,37 @@ let honestEV(idEV:ID, chEV:channel, skEV:skey, gskEV:skey, m:bitstring, open:Ope
 			event exit_EV
 		)
 	).
+')
+
+honestEV_definition(`EP')
+honestEV_definition(`')
 
 (* creates and registers n vehicles/users*)
-let createEV(idEV:ID)=
+define(`createEV_definition',
+` `'
+let createEV`'ifelse($1,`MO',`_MO')`'ifelse($2,`EP',`_EP')`'ifelse($3,`single',`_singleinstance') dnl
+  (idEV:ID ifelse($1,`MO',`, idMO:ID') ifelse($2,`EP',`, idEP:ID'))=
 	new skEV:skey;
 	new chUser:channel;
 	new m:bitstring;
 	new open: Open;
 	in(yellowpagesPH,(pkPH: pkey,chPH:channel));
 	let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
-	in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
-	!(
+	in(yellowpagesMO,(ifelse($1,`MO',`=idMO',`idMO:ID'),chMO:channel,pkMO:pkey));
+	ifelse($3,`single',`',`!') dnl
+	(
 		!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
-		honestEV(idEV,chUser,skEV,GKeygen(gmsk,idEV),m,open,anonymcred,idMO,createContractID(idEV))
+		honestEV`'ifelse($2,`EP',`_EP')(ifelse($2,`EP',`idEP,')`'idEV,chUser,skEV,GKeygen(gmsk,idEV),m,open,anonymcred,idMO,createContractID(idEV))
 	).
+')
 
-let createEV3(idEV:ID, idMO:ID)=
-	new skEV:skey;
-	new chUser:channel;
-	new m:bitstring;
-	new open: Open;
-	in(yellowpagesPH,(pkPH: pkey,chPH:channel));
-	let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
-	in(yellowpagesMO,(=idMO,chMO:channel,pkMO:pkey));
-	!(
-		!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
-		honestEV(idEV,chUser,skEV,GKeygen(gmsk,idEV),m,open,anonymcred,idMO,createContractID(idEV))
-	).
+createEV_definition(`',`',`')
+createEV_definition(`MO',`',`')
+createEV_definition(`',`EP',`')
+createEV_definition(`MO',`EP',`')
 
 (* creates and registers n vehicles/users*) 
-let createEV_singleinstance(idEV:ID)=
-	new skEV:skey;
-	new chUser:channel;
-	new m:bitstring;
-	new open: Open;
-	in(yellowpagesPH,(pkPH: pkey,chPH:channel));
-	let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
-	in(yellowpagesMO,(idMO:ID,chMO:channel,pkMO:pkey));
-	(
-		!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
-		honestEV(idEV,chUser,skEV,GKeygen(gmsk,idEV),m,open,anonymcred,idMO,createContractID(idEV))
-	).
-
-let createEV3_singleinstance(idEV:ID, idMO:ID)=
-	new skEV:skey;
-	new chUser:channel;
-	new m:bitstring;
-	new open: Open;
-	in(yellowpagesPH,(pkPH: pkey,chPH:channel));
-	let anonymcred = ObtainSig(pkPH,m,Commit(m,open),open) in
-	in(yellowpagesMO,(=idMO,chMO:channel,pkMO:pkey));
-	(
-		!out(yellowpagesEV,(idEV,chUser,idMO,createContractID(idEV),skEV,GKeygen(gmsk,idEV),anonymcred)) |
-		honestEV(idEV,chUser,skEV,GKeygen(gmsk,idEV),m,open,anonymcred,idMO,createContractID(idEV))
-	).
+createEV_definition(`',`',`single')
+createEV_definition(`MO',`',`single')
+createEV_definition(`',`EP',`single')
+createEV_definition(`MO',`EP',`single')

@@ -41,10 +41,10 @@ let publishSensitiveInfomation()=
 	(out(publicChannel,GPk(gmsk)))|
 	!(in(yellowpagesMO,x:bitstring);
 	out(publicChannel,x)) |
-	!(in(yellowpagesEP,x:bitstring);
-	out(publicChannel,x)) |
-	!(in(yellowpagesCS,x:bitstring);
-	out(publicChannel,x)) |
+	!(in(yellowpagesEP,(idEP:ID,chEP:channel,pkEP:pkey));
+	out(publicChannel,(chEP,pkEP))) |
+	!(in(yellowpagesCS,(idCS:ID,chCS:channel,idEP:ID,pkCS:pkey));
+	out(publicChannel,(idCS,chCS,pkCS))) |
 	!(in(yellowpagesPH,x:bitstring);
 	out(publicChannel,x)) |
 	!(in(yellowpagesDR,x:bitstring);
@@ -106,7 +106,7 @@ query attacker(idEV).
 
 process
 	(
-		createEV3(idEV,idMO) | createHonestActors() | publishSensitiveInfomation() |
+		createEV_MO(idEV,idMO) | createHonestActors() | publishSensitiveInfomation() |
 		createMO(idMO) |
 		!dishonestCS() | !dishonestEP() | !dishonestMO() 
 	)
@@ -120,8 +120,11 @@ query attacker(idEP).
 
 process
 	(
-		(new idEV:ID; createEV2(idEV,idEP)) | createHonestActors() | publishSensitiveInfomation() |
-		!dishonestCS() | !dishonestMO() | !dishonestEP() 
+		(new idEV:ID; createEV_EP(idEV,idEP)) |
+		createHonestActors() |
+		publishSensitiveInfomation() |
+		createEP(idEP) |
+		dishonestCS() | dishonestMO()
 	)
 )
 
@@ -131,18 +134,18 @@ free idMO: ID [private].
 
 equivalence
 	(
-		createEV3(idEV,idMO) | !(new idEV:ID; createEV(idEV) ) |
+		(new idEV0:ID; createEV_MO(idEV,idMO)) | !(new idEV:ID; createEV(idEV) ) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
-		!dishonestCS() | !dishonestEP() | !dishonestMO()
+		dishonestCS() | dishonestEP() | dishonestMO()
 	)
 	(
 		(new idEV:ID; createEV(idEV)) | !(new idEV:ID; createEV(idEV) ) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
-		!dishonestCS() | !dishonestEP() | !dishonestMO()
+		dishonestCS() | dishonestEP() | dishonestMO()
 	)
 )
 
@@ -153,7 +156,7 @@ free idMO: ID [private].
 
 process
 	(
-		createEV3(idEV,idMO) |
+		createEV_MO(idEV,idMO) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
@@ -167,11 +170,11 @@ noninterf idEP.
 
 process
 	(
-		createEP(idEP) |
-		(new idEV:ID; createEV2(idEV,idEP)) |
+		(new idEV:ID; createEV_EP(idEV,idEP)) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
-		!(new idCS:ID; createCS(idCS)) | !dishonestEP() | !dishonestMO()
+		createEP(idEP) |
+		!(new idCS:ID; createCS(idCS)) | dishonestMO()
 	)
 )
 
@@ -181,7 +184,7 @@ free idMO: ID [private].
 
 process
 	(
-		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV3_singleinstance(idEV,idMO)) |
+		(new idEV0: ID; out(publicChannel,choice[idEV,idEV0]); createEV_MO_singleinstance(idEV,idMO)) |
 		createHonestActors_singleinstance() |
 		publishSensitiveInfomation() |
 		createMO_singleinstance(idMO) |
@@ -194,14 +197,14 @@ free idMO: ID [private].
 
 equivalence
 	(
-		!(new idEV:ID; createEV3(idEV,idMO)) |
+		!(new idEV:ID; createEV_MO(idEV,idMO)) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
 		!dishonestCS() | !dishonestEP()
 	)
 	(
-		!(new idEV:ID; createEV3_singleinstance(idEV,idMO)) |
+		!(new idEV:ID; createEV_MO_singleinstance(idEV,idMO)) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		createMO(idMO) |
@@ -214,7 +217,7 @@ free idEP: ID [private].
 
 equivalence
 	(
-		createEP(idEP) | !(new idEV:ID; createEV2(idEV,idEP) ) |
+		createEP(idEP) | !(new idEV:ID; createEV_EP(idEV,idEP) ) |
 		createHonestActors() |
 		publishSensitiveInfomation() |
 		!dishonestCS() | !dishonestEP() | !dishonestMO()
